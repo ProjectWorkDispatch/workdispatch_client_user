@@ -1,8 +1,8 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { forgotPassword } from "../../../shared/api";
+import { resendVerification } from "../../../shared/api";
 
-export const ForgotPasswordForm = ({ onSwitch }) => {
+export const ResendVerificationForm = ({ onSwitch }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -16,11 +16,11 @@ export const ForgotPasswordForm = ({ onSwitch }) => {
 
     setLoading(true);
     try {
-      await forgotPassword(email);
-      toast.success("Correo de recuperación enviado. Revisa tu bandeja.");
+      await resendVerification(email);
+      toast.success("Correo de verificación reenviado. Revisa tu bandeja.");
       setEmail("");
     } catch (error) {
-      const msg = error.response?.data?.message || "Error al enviar el correo";
+      const msg = error.response?.data?.message || "Error al reenviar el correo";
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -31,7 +31,7 @@ export const ForgotPasswordForm = ({ onSwitch }) => {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-gray-300">
-          Email
+          Correo electrónico
         </label>
         <input
           type="email"
@@ -48,10 +48,10 @@ export const ForgotPasswordForm = ({ onSwitch }) => {
           hover:to-yellow-300 text-gray-900 font-semibold py-2.5 px-4 rounded-lg transition-all
           duration-200 text-sm disabled:opacity-50"
         >
-          {loading ? "Enviando..." : "Enviar correo"}
+          {loading ? "Reenviando..." : "Reenviar correo de verificación"}
         </button>
         <p className="text-center text-sm text-gray-400">
-          ¿Recordaste tu contraseña?{" "}
+          ¿Ya verificaste tu cuenta?{" "}
         </p>
         <button
           type="button"
