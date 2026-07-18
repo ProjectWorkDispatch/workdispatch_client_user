@@ -1,9 +1,14 @@
+// client-user/src/app/router/AppRoutes.jsx  (ARCHIVO MODIFICADO)
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "../../features/auth/store/authStore.js";
 import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
 import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { DashboardHome } from "../../features/dashboard/components/DashboardHome.jsx";
+import { MessagesHome } from "../../features/messages/components/MessagesHome.jsx";
+//import { NotificationsHome } from "../../features/notifications/components/NotificationsHome.jsx";
+//import { ReviewsHome } from "../../features/reviews/components/ReviewsHome.jsx";
+//import { ReportsHome } from "../../features/reports/components/ReportsHome.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingAuth } = useAuthStore();
@@ -36,7 +41,10 @@ export const AppRoutes = () => {
         }
       >
         <Route index element={<DashboardHome />} />
-
+        <Route path="messages" element={<MessagesHome />} />
+        <Route path="notifications" element={<NotificationsHome />} />
+        <Route path="reviews" element={<ReviewsHome />} />
+        <Route path="reports" element={<ReportsHome />} />
       </Route>
 
       <Route path="*" element={<h1>Página no encontrada</h1>} />

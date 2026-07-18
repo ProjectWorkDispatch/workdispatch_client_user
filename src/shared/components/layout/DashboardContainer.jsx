@@ -10,6 +10,7 @@ import {
   XMarkIcon,
   ChatBubbleLeftRightIcon,
   BellIcon,
+  StarIcon,
 } from "@heroicons/react/24/outline";
 import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 import { useAuthStore } from "../../../features/auth/store/authStore";
@@ -23,11 +24,13 @@ const CLIENT_NAV = [
   { label: "Mis Solicitudes", to: "/dashboard/my-requests", icon: ClipboardDocumentListIcon },
   { label: "Buscar Trabajadores", to: "/dashboard/find-workers", icon: MagnifyingGlassIcon },
   { label: "Mis Contratos", to: "/dashboard/my-services", icon: BriefcaseIcon },
+  { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
 ];
 
 const WORKER_NAV = [
   { label: "Trabajos Disponibles", to: "/dashboard", icon: BriefcaseIcon },
   { label: "Mis Ofertas", to: "/dashboard/my-offers", icon: ClipboardDocumentListIcon },
+  { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
 ];
 
 /* ------------------------------------------------------------------ */
