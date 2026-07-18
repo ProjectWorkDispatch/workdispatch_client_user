@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { useAuthStore } from "../../auth/store/authStore";
-import { useReviewsStore } from "../../../shared/store/appStore";
+import { useReviewsStore } from "../../../shared/store/userStore";
 import { ReviewCard } from "./ReviewCard";
 
 export const ReviewsHome = () => {
