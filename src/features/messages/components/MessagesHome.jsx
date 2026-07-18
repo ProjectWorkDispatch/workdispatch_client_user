@@ -4,7 +4,7 @@ import { useAuthStore } from "../../auth/store/authStore";
 import { useMessagesStore } from "../../../shared/store/userStore.js";
 import { ConversationItem } from "./ConversationItem";
 import { ChatWindow } from "./ChatWindow.jsx";
-//import { ReportModal } from "../../reports/components/ReportModal";
+import { ReportModal } from "../../reports/components/ReportModal";
 
 export const MessagesHome = () => {
     const { user } = useAuthStore();

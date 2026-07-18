@@ -6,9 +6,9 @@ import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { DashboardHome } from "../../features/dashboard/components/DashboardHome.jsx";
 import { MessagesHome } from "../../features/messages/components/MessagesHome.jsx";
-//import { NotificationsHome } from "../../features/notifications/components/NotificationsHome.jsx";
-//import { ReviewsHome } from "../../features/reviews/components/ReviewsHome.jsx";
-//import { ReportsHome } from "../../features/reports/components/ReportsHome.jsx";
+import { NotificationsHome } from "../../features/notifications/components/NotificationsHome.jsx";
+import { ReviewsHome } from "../../features/reviews/components/ReviewsHome.jsx";
+import { ReportsHome } from "../../features/reports/components/ReportsHome.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingAuth } = useAuthStore();
