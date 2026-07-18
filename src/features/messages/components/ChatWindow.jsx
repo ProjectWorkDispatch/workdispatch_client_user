@@ -1,47 +1,89 @@
-import { useState } from "react";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { useEffect, useRef } from "react";
+import { ArrowLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { MessageInput } from "./MessageInput.jsx";
+import { MessageBubble } from "./Messagebubble.jsx";
 
-export const MessageInput = ({ conversationId, senderId, onSendMessage }) => {
-    const [content, setContent] = useState("");
-    const [sending, setSending] = useState(false);
+export const ChatWindow = ({
+    conversation,
+    messages,
+    currentUserId,
+    onSendMessage,
+    onBack,
+    onReport
+}) => {
+    const messagesEndRef = useRef(null);
 
-    const handleSend = async () => {
-        if (!content.trim() || !conversationId || !senderId || sending) return;
-        try {
-            setSending(true);
-            await onSendMessage(conversationId, senderId, content.trim());
-            setContent("");
-        } finally {
-            setSending(false);
-        }
-    };
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-    };
+    if (!conversation) {
+        return (
+            <div className="flex-1 bg-gray-50 flex flex-col items-center justify-center rounded-2xl border border-gray-200">
+                <p className="text-gray-400">Selecciona una conversación para empezar a chatear</p>
+            </div>
+        );
+    }
+
+    const otherUser = conversation.user1Id?._id === currentUserId
+        ? conversation.user2Id
+        : conversation.user1Id;
 
     return (
-        <div className="p-3 md:p-4 border-t border-gray-100 bg-white">
-            <div className="flex items-center gap-2">
-                <input
-                    type="text"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Escribe un mensaje..."
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-700 placeholder:text-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
-                />
+        <div className="flex-1 flex flex-col bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden h-full">
+
+            {/* Header del Chat */}
+            <div className="bg-white px-4 py-3 border-b border-gray-200 flex items-center justify-between shadow-sm z-10">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={onBack}
+                        className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition"
+                    >
+                        <ArrowLeftIcon className="w-5 h-5" />
+                    </button>
+                    <div>
+                        <h2 className="font-semibold text-gray-900 capitalize">
+                            {otherUser?.firstName} {otherUser?.lastName}
+                        </h2>
+                        <p className="text-xs text-gray-500">
+                            Cliente
+                        </p>
+                    </div>
+                </div>
                 <button
-                    onClick={handleSend}
-                    disabled={!content.trim() || sending}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-yellow-500 hover:bg-yellow-400 disabled:opacity-40 text-gray-900 flex items-center justify-center transition"
+                    onClick={() => onReport(otherUser)}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition"
+                    title="Reportar usuario"
                 >
-                    <PaperAirplaneIcon className="size-4" />
+                    <ExclamationTriangleIcon className="w-5 h-5" />
                 </button>
             </div>
+
+            {/* Lista de Mensajes */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages && messages.length > 0 ? (
+                    messages.map((msg) => (
+                        <MessageBubble // <-- B mayúscula aquí
+                            key={msg._id || msg.id}
+                            message={msg}
+                            currentUserId={currentUserId} // <-- Pásale el ID como lo espera tu componente
+                        />
+                    ))
+                ) : (
+                    <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                        No hay mensajes aún. ¡Escribe el primero!
+                    </div>
+                )}
+                {/* Referencia invisible para el auto-scroll */}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input para enviar mensajes (Tu componente) */}
+            <MessageInput
+                conversationId={conversation._id}
+                senderId={currentUserId}
+                onSendMessage={onSendMessage}
+            />
         </div>
     );
 };
