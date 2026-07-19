@@ -2,8 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import toast from 'react-hot-toast';
 
-import { login as loginRequest, register as registerRequest } from "../../../shared/api";
-
+import { login as loginRequest, register as registerRequest, registerUserProfile } from "../../../shared/api";
 const ALLOWED_ROLES = ["CLIENT", "WORKER"];
 
 export const useAuthStore = create(
@@ -105,6 +104,13 @@ export const useAuthStore = create(
 
                     const { data } = await registerRequest(formData);
 
+                    // NUEVO: crea el perfil también en workdispatch_user
+                    try {
+                        await registerUserProfile(formData);
+                    } catch (profileError) {
+                        console.error("Error creando perfil en user-service:", profileError);
+                    }
+
                     set({ loading: false });
 
                     if (data?.emailVerificationRequired) {
@@ -130,6 +136,7 @@ export const useAuthStore = create(
                 }
             },
         }),
+            
         {
             name: "auth-store-user",
             onRehydrateStorage: () => (state) => {
