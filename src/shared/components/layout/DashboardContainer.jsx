@@ -28,6 +28,7 @@ const CLIENT_NAV = [
 const WORKER_NAV = [
   { label: "Trabajos Disponibles", to: "/dashboard", icon: BriefcaseIcon },
   { label: "Mis Ofertas", to: "/dashboard/my-offers", icon: ClipboardDocumentListIcon },
+  { label: "Mis Servicios", to: "/dashboard/my-services", icon: BriefcaseIcon },
 ];
 
 /* ------------------------------------------------------------------ */

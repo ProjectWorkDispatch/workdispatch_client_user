@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { Card, CardContent } from "../../../shared/components/layout/DashboardContainer";
+import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 
 export const DashboardStats = ({ stats }) => {
   return (

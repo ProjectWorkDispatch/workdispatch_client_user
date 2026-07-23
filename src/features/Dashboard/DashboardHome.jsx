@@ -1,4 +1,4 @@
-import { useAuthStore } from "../../auth/store/authStore";
+import { useAuthStore } from "../auth/store/authStore";
 import { ClientDashboardSummary } from "./ClientDashboardSummary";
 import { WorkerDashboardSummary } from "./WorkerDashboardSummary";
 

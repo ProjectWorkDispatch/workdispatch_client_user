@@ -7,10 +7,10 @@ import {
 import {
   Card,
   CardContent,
-} from "../../../shared/components/layout/DashboardContainer";
-import { getWorkerProposals } from "../../../shared/api/user";
-import { useAuthStore } from "../../auth/store/authStore";
-import { WorkerRequestDetailsModal } from "./WorkerRequestDetailsModal";
+} from "../../shared/components/layout/DashboardContainer";
+import { getWorkerProposals } from "../../shared/api/user";
+import { useAuthStore } from "../auth/store/authStore";
+import { WorkerRequestDetailsModal } from "../Dashboard/WorkerRequestDetailsModal";
 
 const getArrayFromResponse = (response, keys = []) => {
   const payload = response?.data;

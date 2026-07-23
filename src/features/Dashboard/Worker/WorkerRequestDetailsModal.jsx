@@ -5,8 +5,8 @@ import {
   PhotoIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Button } from "../../../shared/components/ui/Button";
-import { Modal } from "../../../shared/components/ui/Modal";
+import { Button } from "../../shared/components/ui/Button";
+import { Modal } from "../../shared/components/ui/Modal";
 
 const getCategoryName = (request) => {
   const category = request?.categoryId || request?.category;

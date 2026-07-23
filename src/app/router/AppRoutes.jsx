@@ -3,8 +3,9 @@ import { useAuthStore } from "../../features/auth/store/authStore.js";
 import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
 import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
-import { DashboardHome } from "../../features/dashboard/components/DashboardHome.jsx";
-import { WorkerOffersPage } from "../../features/dashboard/components/WorkerOffersPage.jsx";
+import { DashboardHome } from "../../features/Dashboard/DashboardHome.jsx";
+import { WorkerOffersPage } from "../../features/MyOffers/WorkerOffersPage.jsx";
+import { WorkerServicesPage } from "../../features/MyServices/WorkerServicesPage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingAuth } = useAuthStore();
@@ -38,6 +39,7 @@ export const AppRoutes = () => {
       >
         <Route index element={<DashboardHome />} />
         <Route path="my-offers" element={<WorkerOffersPage />} />
+        <Route path="my-services" element={<WorkerServicesPage />} />
 
       </Route>
 

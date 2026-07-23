@@ -5,9 +5,9 @@ import {
   CheckCircleIcon,
   MapPinIcon,
 } from "@heroicons/react/24/outline";
-import { Button } from "../../../shared/components/ui/Button";
-import { Modal } from "../../../shared/components/ui/Modal";
-import { Card, CardContent } from "../../../shared/components/layout/DashboardContainer";
+import { Button } from "../../shared/components/ui/Button";
+import { Modal } from "../../shared/components/ui/Modal";
+import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { DashboardStats } from "./DashboardStats";
 
 export const ClientDashboardSummary = () => {
