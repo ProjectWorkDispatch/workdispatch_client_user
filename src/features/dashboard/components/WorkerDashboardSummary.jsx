@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
   BriefcaseIcon,
   CheckCircleIcon,
   ClipboardDocumentListIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
-  MapPinIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 import {
   Badge,
@@ -20,6 +21,8 @@ import {
   getWorkerSkills,
 } from "../../../shared/api/user";
 import { DashboardStats } from "./DashboardStats";
+import { WorkerOfferModal } from "./WorkerOfferModal";
+import { WorkerRequestDetailsModal } from "./WorkerRequestDetailsModal";
 
 const getArrayFromResponse = (response, keys = []) => {
   const payload = response?.data;
@@ -40,6 +43,11 @@ const getId = (value) => {
 };
 
 const getUserId = (user) => user?.id || user?._id || user?.userId || user?.Id;
+const JOBS_PER_PAGE = 5;
+
+const getImageUrl = (job) => {
+  return job?.serviceImage?.url || job?.image?.url || job?.photo?.url || "";
+};
 
 const getCategoryName = (request) => {
   const category = request?.categoryId || request?.category;
@@ -129,9 +137,12 @@ export const WorkerDashboardSummary = ({ user }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [jobSearch, setJobSearch] = useState("");
+  const [jobsPage, setJobsPage] = useState(1);
   const [skills, setSkills] = useState([]);
   const [proposals, setProposals] = useState([]);
   const [services, setServices] = useState([]);
+  const [selectedOfferJob, setSelectedOfferJob] = useState(null);
+  const [selectedDetailsJob, setSelectedDetailsJob] = useState(null);
 
   useEffect(() => {
     if (!workerId) return;
@@ -193,8 +204,52 @@ export const WorkerDashboardSummary = ({ user }) => {
     });
   }, [jobSearch, openJobs, selectedCategoryId]);
 
+  useEffect(() => {
+    setJobsPage(1);
+  }, [jobSearch, selectedCategoryId]);
+
+  const totalJobPages = Math.max(1, Math.ceil(filteredJobs.length / JOBS_PER_PAGE));
+  const paginatedJobs = useMemo(() => {
+    const safePage = Math.min(jobsPage, totalJobPages);
+    const start = (safePage - 1) * JOBS_PER_PAGE;
+    return filteredJobs.slice(start, start + JOBS_PER_PAGE);
+  }, [filteredJobs, jobsPage, totalJobPages]);
+
+  useEffect(() => {
+    if (jobsPage > totalJobPages) setJobsPage(totalJobPages);
+  }, [jobsPage, totalJobPages]);
+
   const pendingProposals = proposals.filter((proposal) => proposal?.status === "PENDING");
   const activeServices = services.filter((service) => service?.status === "IN_PROGRESS");
+  const proposedRequestIds = useMemo(() => {
+    return new Set(
+      proposals
+        .map((proposal) => getId(proposal?.serviceRequestId))
+        .filter(Boolean)
+    );
+  }, [proposals]);
+
+  const handleOpenOfferModal = (job) => {
+    if (proposedRequestIds.has(getId(job))) {
+      toast.error("Ya enviaste una oferta para esta solicitud.");
+      return;
+    }
+
+    setSelectedOfferJob(job);
+  };
+
+  const handleOfferFromDetails = () => {
+    const job = selectedDetailsJob;
+    if (!job) return;
+
+    setSelectedDetailsJob(null);
+    handleOpenOfferModal(job);
+  };
+
+  const handleProposalCreated = (proposal) => {
+    if (!proposal) return;
+    setProposals((current) => [proposal, ...current]);
+  };
 
   const stats = [
     { label: "Trabajos Disponibles", value: filteredJobs.length, icon: BriefcaseIcon, bg: "bg-yellow-50", border: "border-yellow-200", color: "text-yellow-600" },
@@ -259,41 +314,74 @@ export const WorkerDashboardSummary = ({ user }) => {
               <p className="py-10 text-center text-sm font-semibold text-gray-500">Cargando trabajos disponibles...</p>
             ) : filteredJobs.length ? (
               <div className="space-y-4">
-                {filteredJobs.slice(0, 5).map((job) => {
+                {paginatedJobs.map((job) => {
                   const matchesWorkerProfile = skillCategoryIds.has(getId(job?.categoryId || job?.category));
+                  const alreadyOffered = proposedRequestIds.has(getId(job));
+                  const imageUrl = getImageUrl(job);
                   return (
-                  <div key={job._id || job.id} className="rounded-lg border border-gray-200 bg-white p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="min-w-0">
+                  <div key={job._id || job.id} className="rounded-lg border border-gray-200 bg-white p-3">
+                    <div className="flex gap-3">
+                      <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+                        {imageUrl ? (
+                          <img src={imageUrl} alt={job.title || "Solicitud"} className="size-full object-cover" />
+                        ) : (
+                          <PhotoIcon className="size-8 text-gray-400" />
+                        )}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           <Badge className="bg-yellow-500 text-gray-900">{getCategoryName(job)}</Badge>
                           {matchesWorkerProfile && <Badge variant="outline">Coincide con tu perfil</Badge>}
                         </div>
                         <h3 className="truncate text-base font-bold text-gray-900">{job.title || "Trabajo disponible"}</h3>
-                        <p className="mt-1 line-clamp-2 text-sm text-gray-500">
-                          {job.description || "El cliente aun no agrego una descripcion detallada."}
-                        </p>
-                      </div>
-                      <div className="shrink-0 text-left sm:text-right">
-                        <p className="text-sm font-black text-gray-900">{formatBudget(job)}</p>
+                        <p className="mt-1 text-sm font-black text-gray-900">{formatBudget(job)}</p>
                         <p className="mt-1 text-xs text-gray-500">{formatDate(job.createdAt)}</p>
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex min-w-0 items-center gap-1 text-sm text-gray-500">
-                        <MapPinIcon className="size-4 shrink-0 text-gray-400" />
-                        <span className="truncate">{job.address || "Ubicacion por confirmar"}</span>
-                      </div>
+
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                       <button
                         type="button"
+                        onClick={() => setSelectedDetailsJob(job)}
                         className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-yellow-400 px-4 text-sm font-bold text-gray-900 transition hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300"
                       >
-                        Enviar oferta
+                        Ver detalles
                       </button>
+                      {alreadyOffered && (
+                        <span className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-sm font-bold text-emerald-700">
+                          Ya ofertaste
+                        </span>
+                      )}
                     </div>
                   </div>
                   );
                 })}
+                {totalJobPages > 1 && (
+                  <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm font-semibold text-gray-500">
+                      Pagina {jobsPage} de {totalJobPages}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setJobsPage((page) => Math.max(1, page - 1))}
+                        disabled={jobsPage === 1}
+                        className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 transition hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Anterior
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setJobsPage((page) => Math.min(totalJobPages, page + 1))}
+                        disabled={jobsPage === totalJobPages}
+                        className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 transition hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Siguiente
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="py-10 text-center">
@@ -363,6 +451,22 @@ export const WorkerDashboardSummary = ({ user }) => {
           </Card>
         </div>
       </div>
+
+      <WorkerOfferModal
+        open={!!selectedOfferJob}
+        onClose={() => setSelectedOfferJob(null)}
+        job={selectedOfferJob}
+        workerId={workerId}
+        hasExistingProposal={selectedOfferJob ? proposedRequestIds.has(getId(selectedOfferJob)) : false}
+        onCreated={handleProposalCreated}
+      />
+      <WorkerRequestDetailsModal
+        open={!!selectedDetailsJob}
+        onClose={() => setSelectedDetailsJob(null)}
+        job={selectedDetailsJob}
+        alreadyOffered={selectedDetailsJob ? proposedRequestIds.has(getId(selectedDetailsJob)) : false}
+        onOffer={handleOfferFromDetails}
+      />
     </div>
   );
 };

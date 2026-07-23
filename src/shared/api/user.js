@@ -17,6 +17,10 @@ export const getWorkerProposals = async (workerId) => {
   return axiosUser.get(`/Proposal/worker/${workerId}`);
 };
 
+export const createProposal = async (payload) => {
+  return axiosUser.post("/Proposal", payload);
+};
+
 export const getWorkerServices = async (workerId) => {
   return axiosUser.get(`/Service/worker/${workerId}`);
 };
