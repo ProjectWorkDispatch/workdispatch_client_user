@@ -4,6 +4,7 @@ import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
 import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { DashboardHome } from "../../features/Dashboard/DashboardHome.jsx";
+import { MyRequestsPage } from "../../features/Dashboard/MyRequestsPage.jsx";
 import { WorkerOffersPage } from "../../features/Proposals/Worker/WorkerOffersPage.jsx";
 import { WorkerServicesPage } from "../../features/Services/Worker/WorkerServicesPage.jsx";
 
@@ -38,6 +39,8 @@ export const AppRoutes = () => {
         }
       >
         <Route index element={<DashboardHome />} />
+        <Route path="my-requests" element={<MyRequestsPage />} />
+        <Route path="my-requests/:id" element={<div className="text-center py-12 text-gray-500">Detalle de solicitud — próximamente (T82)</div>} />
         <Route path="my-offers" element={<WorkerOffersPage />} />
         <Route path="my-services" element={<WorkerServicesPage />} />
 

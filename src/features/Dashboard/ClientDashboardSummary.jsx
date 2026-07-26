@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PlusIcon,
   ClockIcon,
@@ -20,6 +21,7 @@ const STATUS_BADGE = {
 };
 
 export const ClientDashboardSummary = () => {
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +112,7 @@ export const ClientDashboardSummary = () => {
               </Card>
             ))}
           </div>
-          <Button variant="outline" onClick={() => console.log('TODO: navegar a Mis Solicitudes (T81)')}>
+          <Button variant="outline" onClick={() => navigate("/dashboard/my-requests")}>
             Ver todas mis solicitudes
           </Button>
         </>
