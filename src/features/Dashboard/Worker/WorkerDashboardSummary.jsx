@@ -12,15 +12,15 @@ import {
   Badge,
   Card,
   CardContent,
-} from "../../shared/components/layout/DashboardContainer";
+} from "../../../shared/components/layout/DashboardContainer";
 import {
   getCategories,
   getOpenServiceRequests,
   getWorkerProposals,
   getWorkerServices,
   getWorkerSkills,
-} from "../../shared/api/user";
-import { DashboardStats } from "./DashboardStats";
+} from "../../../shared/api/user";
+import { DashboardStats } from "../DashboardStats";
 import { WorkerOfferModal } from "./WorkerOfferModal";
 import { WorkerRequestDetailsModal } from "./WorkerRequestDetailsModal";
 

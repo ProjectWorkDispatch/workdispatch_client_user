@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/24/solid";
-import { Button } from "../../shared/components/ui/Button";
-import { Modal } from "../../shared/components/ui/Modal";
-import { createReview } from "../../shared/api/user";
+import { Button } from "../../../shared/components/ui/Button";
+import { Modal } from "../../../shared/components/ui/Modal";
+import { createReview } from "../../../shared/api/user";
 
 const getId = (value) => {
   if (!value) return "";

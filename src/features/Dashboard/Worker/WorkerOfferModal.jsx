@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { SparklesIcon } from "@heroicons/react/24/outline";
-import { Button } from "../../shared/components/ui/Button";
-import { Modal } from "../../shared/components/ui/Modal";
-import { createProposal } from "../../shared/api/user";
+import { Button } from "../../../shared/components/ui/Button";
+import { Modal } from "../../../shared/components/ui/Modal";
+import { createProposal } from "../../../shared/api/user";
 
 const getId = (value) => {
   if (!value) return "";

@@ -4,8 +4,8 @@ import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
 import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { DashboardHome } from "../../features/Dashboard/DashboardHome.jsx";
-import { WorkerOffersPage } from "../../features/MyOffers/WorkerOffersPage.jsx";
-import { WorkerServicesPage } from "../../features/MyServices/WorkerServicesPage.jsx";
+import { WorkerOffersPage } from "../../features/Proposals/Worker/WorkerOffersPage.jsx";
+import { WorkerServicesPage } from "../../features/Services/Worker/WorkerServicesPage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingAuth } = useAuthStore();

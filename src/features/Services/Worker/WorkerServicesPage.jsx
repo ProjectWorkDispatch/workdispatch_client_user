@@ -12,13 +12,13 @@ import {
 import {
   Card,
   CardContent,
-} from "../../shared/components/layout/DashboardContainer";
-import { Button } from "../../shared/components/ui/Button";
+} from "../../../shared/components/layout/DashboardContainer";
+import { Button } from "../../../shared/components/ui/Button";
 import {
   getReviewsByReviewer,
   getWorkerServices,
-} from "../../shared/api/user";
-import { useAuthStore } from "../auth/store/authStore";
+} from "../../../shared/api/user";
+import { useAuthStore } from "../../auth/store/authStore";
 import { WorkerReviewModal } from "./WorkerReviewModal";
 
 const getArrayFromResponse = (response, keys = []) => {

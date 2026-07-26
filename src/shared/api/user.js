@@ -32,3 +32,12 @@ export const getReviewsByReviewer = async (reviewerId) => {
 export const createReview = async (payload) => {
   return axiosUser.post("/reviews", payload);
 };
+
+export const getMyServiceRequests = async (status) => {
+  const params = status ? { status } : undefined;
+  return axiosUser.get("/serviceRequest/mine", { params });
+};
+
+export const getServiceRequestById = async (id) => {
+  return axiosUser.get(`/serviceRequest/${id}`);
+};

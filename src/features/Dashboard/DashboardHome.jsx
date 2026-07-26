@@ -1,6 +1,6 @@
 import { useAuthStore } from "../auth/store/authStore";
 import { ClientDashboardSummary } from "./ClientDashboardSummary";
-import { WorkerDashboardSummary } from "./WorkerDashboardSummary";
+import { WorkerDashboardSummary } from "../Dashboard/Worker/WorkerDashboardSummary";
 
 export const DashboardHome = () => {
   const { user } = useAuthStore();
