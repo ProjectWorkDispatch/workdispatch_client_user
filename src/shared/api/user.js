@@ -41,3 +41,9 @@ export const getMyServiceRequests = async (status) => {
 export const getServiceRequestById = async (id) => {
   return axiosUser.get(`/serviceRequest/${id}`);
 };
+
+export const createServiceRequest = async (formData) => {
+  return axiosUser.post("/serviceRequest", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};

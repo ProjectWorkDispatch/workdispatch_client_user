@@ -7,9 +7,9 @@ import {
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { Button } from "../../shared/components/ui/Button";
-import { Modal } from "../../shared/components/ui/Modal";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { DashboardStats } from "./DashboardStats";
+import { NewServiceRequestModal } from "./NewServiceRequestModal";
 import { getMyServiceRequests, getCategories } from "../../shared/api/user";
 
 const STATUS_BADGE = {
@@ -24,20 +24,21 @@ export const ClientDashboardSummary = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchData = async () => {
+    try {
+      const [requestsRes, categoriesRes] = await Promise.all([
+        getMyServiceRequests(),
+        getCategories(),
+      ]);
+      setRequests(requestsRes.data.data || []);
+    } catch (error) {
+      toast.error("Error al cargar tus solicitudes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [requestsRes, categoriesRes] = await Promise.all([
-          getMyServiceRequests(),
-          getCategories(),
-        ]);
-        setRequests(requestsRes.data.data || []);
-      } catch (error) {
-        toast.error("Error al cargar tus solicitudes");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -115,20 +116,11 @@ export const ClientDashboardSummary = () => {
         </>
       )}
 
-      <Modal
+      <NewServiceRequestModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title="Nueva Solicitud"
-        description="Este modal es solo un ejemplo de como reutilizar el componente Modal."
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setOpenModal(false)}>Cancelar</Button>
-            <Button onClick={() => setOpenModal(false)}>Guardar</Button>
-          </>
-        }
-      >
-        <p className="text-gray-600 text-sm">Aqui va el formulario real de creacion de solicitud.</p>
-      </Modal>
+        onCreated={fetchData}
+      />
     </div>
   );
 };
