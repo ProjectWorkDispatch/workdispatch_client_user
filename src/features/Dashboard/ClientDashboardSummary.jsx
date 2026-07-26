@@ -97,7 +97,7 @@ export const ClientDashboardSummary = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-bold text-gray-900">{req.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{req.categoryId?.name}</p>
+                      <p className="text-sm text-gray-500 mt-1">{req.categoryId?.name || req.customCategory || "Sin categoría"}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[req.status] || "bg-gray-100 text-gray-600"}`}>

@@ -9,6 +9,7 @@ const INITIAL_FORM = {
   title: "",
   description: "",
   categoryId: "",
+  customCategory: "",
   address: "",
   latitude: "",
   longitude: "",
@@ -32,6 +33,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -46,7 +48,9 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
   const resetForm = () => {
     setForm(INITIAL_FORM);
     setErrors(INITIAL_ERRORS);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImageFile(null);
+    setImagePreview(null);
   };
 
   const handleChange = (e) => {
@@ -55,12 +59,24 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return file ? URL.createObjectURL(file) : null;
+    });
+  };
+
   const validate = () => {
     const e = {};
     if (!form.title || form.title.length < 10) e.title = "El título debe tener al menos 10 caracteres";
     if (!form.description) e.description = "La descripción es obligatoria";
-    if (!form.categoryId) e.categoryId = "Seleccioná una categoría";
-    if (!form.address) e.address = "La dirección es obligatoria";
+    if (!form.categoryId) {
+      e.categoryId = "Seleccioná una categoría o escribí una personalizada";
+    } else if (form.categoryId === "__custom" && !form.customCategory.trim()) {
+      e.categoryId = "Escribí tu categoría personalizada";
+    } if (!form.address) e.address = "La dirección es obligatoria";
     if (!form.latitude || !form.longitude) e.location = "Selecciona la ubicación en el mapa";
     if (!form.budgetMin || parseFloat(form.budgetMin) < 0) e.budgetMin = "El presupuesto mínimo no puede ser negativo";
     if (!form.budgetMax || parseFloat(form.budgetMax) < 0) e.budgetMax = "El presupuesto máximo no puede ser negativo";
@@ -78,7 +94,11 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
     const fd = new FormData();
     fd.append("title", form.title);
     fd.append("description", form.description);
-    fd.append("categoryId", form.categoryId);
+    if (form.categoryId === "__custom") {
+      fd.append("customCategory", form.customCategory.trim());
+    } else if (form.categoryId) {
+      fd.append("categoryId", form.categoryId);
+    }
     fd.append("address", form.address);
     fd.append("latitude", form.latitude);
     fd.append("longitude", form.longitude);
@@ -153,20 +173,32 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
           <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
           {categoriesLoading ? (
             <p className="text-gray-500 text-sm">Cargando categorías...</p>
-          ) : categories.length === 0 ? (
-            <p className="text-gray-500 text-sm">No hay categorías disponibles</p>
           ) : (
-            <select
-              name="categoryId"
-              value={form.categoryId}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
-            >
-              <option value="">Seleccionar categoría</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>{cat.name}</option>
-              ))}
-            </select>
+            <>
+              <select
+                name="categoryId"
+                value={form.categoryId}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+              >
+                <option value="">Seleccionar categoría</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                ))}
+                <option value="__custom">Otra (especificar)</option>
+              </select>
+              {form.categoryId === "__custom" && (
+                <input
+                  type="text"
+                  name="customCategory"
+                  value={form.customCategory}
+                  onChange={handleChange}
+                  placeholder="Escribí tu categoría personalizada"
+                  maxLength={100}
+                  className="w-full mt-2 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+                />
+              )}
+            </>
           )}
           {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>}
         </div>
@@ -234,12 +266,21 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
         {/* Imagen */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Foto (opcional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-            className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
-          />
+          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="w-20 h-20 rounded-xl bg-white border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Vista previa" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-gray-400 text-[10px] font-medium text-center px-1">Sin imagen</span>
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 cursor-pointer"
+            />
+          </div>
         </div>
 
         {/* IA Estimate — deshabilitado */}

@@ -47,3 +47,15 @@ export const createServiceRequest = async (formData) => {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
+
+export const getProposalsForRequest = async (serviceRequestId) => {
+  return axiosUser.get(`/Proposal/requests/${serviceRequestId}`);
+};
+
+export const acceptProposal = async (proposalId) => {
+  return axiosUser.patch(`/Proposal/accept/${proposalId}`);
+};
+
+export const rejectProposal = async (proposalId) => {
+  return axiosUser.patch(`/Proposal/reject/${proposalId}`);
+};

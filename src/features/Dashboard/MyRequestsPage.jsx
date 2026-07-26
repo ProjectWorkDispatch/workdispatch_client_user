@@ -9,13 +9,7 @@ import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { NewServiceRequestModal } from "./NewServiceRequestModal";
 import { getMyServiceRequests, getCategories } from "../../shared/api/user";
-
-const STATUS_BADGE = {
-  OPEN: "bg-yellow-100 text-yellow-800",
-  IN_PROGRESS: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-gray-100 text-gray-600",
-};
+import { STATUS_BADGE, formatRelativeDate } from "../../shared/utils/statusBadge";
 
 const STATUS_TABS = [
   { label: "Todas", value: null },
@@ -24,31 +18,6 @@ const STATUS_TABS = [
   { label: "Completadas", value: "COMPLETED" },
   { label: "Canceladas", value: "CANCELLED" },
 ];
-
-const formatRelativeDate = (dateString) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
-
-  const intervals = [
-    { label: "year", divisor: 31536000 },
-    { label: "month", divisor: 2592000 },
-    { label: "week", divisor: 604800 },
-    { label: "day", divisor: 86400 },
-    { label: "hour", divisor: 3600 },
-    { label: "minute", divisor: 60 },
-    { label: "second", divisor: 1 },
-  ];
-
-  for (const interval of intervals) {
-    const count = Math.floor(diffInSeconds / interval.divisor);
-    if (count >= 1) {
-      const rtf = new Intl.RelativeTimeFormat("es", { numeric: "auto" });
-      return rtf.format(-count, interval.label);
-    }
-  }
-  return "hace un momento";
-};
 
 export const MyRequestsPage = () => {
   const navigate = useNavigate();
@@ -180,7 +149,7 @@ export const MyRequestsPage = () => {
                     <h3 className="text-lg font-bold text-gray-900 truncate">{req.title}</h3>
                     <div className="mt-1">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
-                        {req.categoryId?.name}
+                        {req.categoryId?.name || req.customCategory || "Sin categoría"}
                       </span>
                     </div>
                     {req.createdAt && (

@@ -39,7 +39,7 @@ const MapClickHandler = ({ onLocationChange }) => {
 const DEFAULT_CENTER = [14.6349, -90.5069];
 const DEFAULT_ZOOM = 13;
 
-export const MapPicker = ({ lat, lng, onLocationChange }) => {
+export const MapPicker = ({ lat, lng, onLocationChange, readOnly = false }) => {
   const position = lat && lng ? [parseFloat(lat), parseFloat(lng)] : null;
 
   return (
@@ -54,7 +54,7 @@ export const MapPicker = ({ lat, lng, onLocationChange }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapClickHandler onLocationChange={onLocationChange} />
+        {!readOnly && <MapClickHandler onLocationChange={onLocationChange} />}
         <RecenterMap position={position} />
         {position && <Marker position={position} icon={markerIcon} />}
       </MapContainer>
@@ -63,18 +63,22 @@ export const MapPicker = ({ lat, lng, onLocationChange }) => {
           <p className="text-xs text-gray-500">
             Ubicación: {position[0].toFixed(6)}, {position[1].toFixed(6)}
           </p>
-          <button
-            type="button"
-            onClick={() => onLocationChange(null, null)}
-            className="text-xs text-red-500 hover:text-red-600 font-medium"
-          >
-            Quitar ubicación
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={() => onLocationChange(null, null)}
+              className="text-xs text-red-500 hover:text-red-600 font-medium"
+            >
+              Quitar ubicación
+            </button>
+          )}
         </div>
       ) : (
-        <p className="text-xs text-gray-400 px-3 py-1.5 bg-gray-50">
-          Haz clic en el mapa para seleccionar la ubicación
-        </p>
+        !readOnly && (
+          <p className="text-xs text-gray-400 px-3 py-1.5 bg-gray-50">
+            Haz clic en el mapa para seleccionar la ubicación
+          </p>
+        )
       )}
     </div>
   );
