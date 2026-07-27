@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
+import { Modal } from "../../shared/components/ui/Modal";
 import { MapPicker } from "../../shared/components/ui/MapPicker";
 import {
   getServiceRequestById,
@@ -40,6 +41,8 @@ export const ServiceRequestDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [rejectTarget, setRejectTarget] = useState(null); // proposalId o null
+  const [rejectReason, setRejectReason] = useState("");
 
   const fetchData = async () => {
     setLoading(true);
@@ -80,11 +83,13 @@ export const ServiceRequestDetailPage = () => {
     }
   };
 
-  const handleReject = async (proposalId) => {
+  const handleReject = async (proposalId, reason) => {
     setActionLoading(proposalId);
     try {
-      await rejectProposal(proposalId);
+      await rejectProposal(proposalId, reason);
       toast.success("Propuesta rechazada");
+      setRejectTarget(null);
+      setRejectReason("");
       const proposalsRes = await getProposalsForRequest(id);
       setProposals(proposalsRes.data.proposals || []);
     } catch (err) {
@@ -261,7 +266,7 @@ export const ServiceRequestDetailPage = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleReject(proposal._id)}
+                          onClick={() => setRejectTarget(proposal._id)}
                           disabled={actionLoading === proposal._id}
                         >
                           Rechazar
@@ -279,6 +284,40 @@ export const ServiceRequestDetailPage = () => {
           </Card>
         </div>
       </div>
+
+      <Modal
+        open={!!rejectTarget}
+        onClose={() => { setRejectTarget(null); setRejectReason(""); }}
+        title="Rechazar propuesta"
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setRejectTarget(null); setRejectReason(""); }}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={rejectReason.trim().length < 5 || actionLoading === rejectTarget}
+              onClick={() => handleReject(rejectTarget, rejectReason.trim())}
+            >
+              {actionLoading === rejectTarget ? "Rechazando..." : "Rechazar"}
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-gray-600 mb-3">
+          Contale al trabajador por qué no vas a aceptar esta propuesta.
+        </p>
+        <textarea
+          className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+          rows={4}
+          maxLength={300}
+          placeholder="Ej: Encontré a alguien con mejor disponibilidad..."
+          value={rejectReason}
+          onChange={(e) => setRejectReason(e.target.value)}
+        />
+        <p className="text-xs text-gray-400 text-right mt-1">{rejectReason.length}/300</p>
+      </Modal>
     </div>
   );
 };

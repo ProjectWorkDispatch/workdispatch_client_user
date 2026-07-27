@@ -56,6 +56,10 @@ export const acceptProposal = async (proposalId) => {
   return axiosUser.patch(`/Proposal/accept/${proposalId}`);
 };
 
-export const rejectProposal = async (proposalId) => {
-  return axiosUser.patch(`/Proposal/reject/${proposalId}`);
+export const rejectProposal = async (proposalId, reason) => {
+  return axiosUser.patch(`/Proposal/reject/${proposalId}`, { reason });
+};
+
+export const getAiEstimate = async (payload) => {
+  return axiosUser.post("/ai/estimate", payload);
 };

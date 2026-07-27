@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal } from "../../shared/components/ui/Modal";
 import { Button } from "../../shared/components/ui/Button";
 import { MapPicker } from "../../shared/components/ui/MapPicker";
-import { getCategories, createServiceRequest } from "../../shared/api/user";
+import { getCategories, createServiceRequest, getAiEstimate } from "../../shared/api/user";
 import toast from "react-hot-toast";
 
 const INITIAL_FORM = {
@@ -35,6 +35,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -66,6 +67,35 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
       if (prev) URL.revokeObjectURL(prev);
       return file ? URL.createObjectURL(file) : null;
     });
+  };
+
+  const handleAiEstimate = async () => {
+    if (!form.title || !form.description) return;
+    setAiLoading(true);
+    try {
+      const selectedCategory = categories.find(cat => cat._id === form.categoryId);
+      const categoryName = selectedCategory?.name || form.customCategory || undefined;
+
+      const res = await getAiEstimate({
+        title: form.title,
+        description: form.description,
+        categoryName,
+        budgetMin: form.budgetMin || undefined,
+        budgetMax: form.budgetMax || undefined,
+      });
+      const data = res.data.data;
+
+      setForm(prev => ({
+        ...prev,
+        budgetMin: String(data.budgetMin ?? prev.budgetMin),
+        budgetMax: String(data.budgetMax ?? prev.budgetMax)
+      }));
+      toast.success(`Estimado: ${data.estimatedTime}`);
+    } catch (error) {
+      toast.error("No se pudo generar el estimado con IA");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const validate = () => {
@@ -283,14 +313,21 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
           </div>
         </div>
 
-        {/* IA Estimate — deshabilitado */}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 opacity-50">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-medium text-gray-500">Estimado con IA</span>
-            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Próximamente</span>
+        {/* IA Estimate */}
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-yellow-700">Estimado con IA</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAiEstimate}
+              loading={aiLoading}
+              disabled={!form.title || !form.description}
+            >
+              Generar estimado con IA
+            </Button>
           </div>
-          <p className="text-xs text-gray-400">Se estimará automáticamente el costo según la categoría y descripción.</p>
-          {/* TODO: integrar Gemini cuando el equipo defina el endpoint */}
+          <p className="text-xs text-yellow-600">Obtené un estimado automático del costo según la categoría y descripción.</p>
         </div>
       </form>
     </Modal>

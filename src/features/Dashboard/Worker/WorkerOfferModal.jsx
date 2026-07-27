@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { Button } from "../../../shared/components/ui/Button";
 import { Modal } from "../../../shared/components/ui/Modal";
-import { createProposal } from "../../../shared/api/user";
+import { createProposal, getAiEstimate } from "../../../shared/api/user";
 
 const getId = (value) => {
   if (!value) return "";
@@ -70,6 +70,7 @@ export const WorkerOfferModal = ({
   const [estimatedTime, setEstimatedTime] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -88,13 +89,31 @@ export const WorkerOfferModal = ({
     return `Tiempo estimado: ${estimatedTime.trim()}\n\n${message.trim()}`;
   }, [estimatedTime, message]);
 
-  const handleAiSuggestion = () => {
-    const suggestedPrice = getSuggestedPrice(job);
-    const suggestedTime = estimatedTime.trim() || getSuggestedTime(job);
-
-    if (!price && suggestedPrice) setPrice(String(suggestedPrice));
-    if (!estimatedTime.trim()) setEstimatedTime(suggestedTime);
-    setMessage(buildAiMessage(job, suggestedTime));
+  const handleAiSuggestion = async () => {
+    setAiLoading(true);
+    try {
+      const res = await getAiEstimate({
+        title: job?.title,
+        description: job?.description,
+        categoryName: getCategoryName(job),
+        budgetMin: job?.budgetMin,
+        budgetMax: job?.budgetMax,
+      });
+      const data = res.data.data;
+      
+      if (!price) setPrice(String(data.budgetMax ?? data.budgetMin ?? ""));
+      if (!estimatedTime.trim()) setEstimatedTime(data.estimatedTime || "");
+      setMessage(data.suggestedMessage || buildAiMessage(job, data.estimatedTime));
+    } catch (error) {
+      toast.error("No se pudo generar el estimado con IA");
+      const suggestedPrice = getSuggestedPrice(job);
+      const suggestedTime = estimatedTime.trim() || getSuggestedTime(job);
+      if (!price && suggestedPrice) setPrice(String(suggestedPrice));
+      if (!estimatedTime.trim()) setEstimatedTime(suggestedTime);
+      setMessage(buildAiMessage(job, suggestedTime));
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -227,7 +246,8 @@ export const WorkerOfferModal = ({
             type="button"
             variant="outline"
             onClick={handleAiSuggestion}
-            disabled={hasExistingProposal || submitting}
+            loading={aiLoading}
+            disabled={hasExistingProposal || submitting || aiLoading}
           >
             <SparklesIcon className="size-4" />
             Sugerir con IA

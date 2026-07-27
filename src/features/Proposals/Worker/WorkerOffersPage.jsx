@@ -211,6 +211,9 @@ export const WorkerOffersPage = () => {
                         </span>
                         <span className="text-xs font-semibold text-gray-400">{formatDate(proposal?.createdAt)}</span>
                       </div>
+                      {proposal?.status === "REJECTED" && proposal?.rejectionReason && (
+                        <p className="text-xs text-gray-500 italic mt-1">Motivo: {proposal.rejectionReason}</p>
+                      )}
                       <h2 className="truncate text-base font-black text-gray-900">{getRequestTitle(proposal)}</h2>
                       <p className="mt-1 line-clamp-2 text-sm text-gray-500">{getRequestDescription(proposal)}</p>
                     </div>
