@@ -60,3 +60,5 @@ export const addUserSkill = async (data) =>
 
 export const getSkills = async () =>
   (await import('./api')).axiosUser.get('/skill');
+// export * from './user';
+// export { axiosAuth, axiosUser, handleRefreshToken } from './api';

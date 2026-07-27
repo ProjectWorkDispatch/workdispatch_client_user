@@ -1,65 +1,42 @@
-import { axiosUser } from "./api";
+import { axiosUser } from './api.js';
 
-export const getOpenServiceRequests = async (categoryId) => {
-  const params = categoryId ? { categoryId } : undefined;
-  return axiosUser.get("/serviceRequest/open", { params });
-};
+// ================= CONVERSATIONS =================
+export const getUserConversations = async (userId) =>
+    await axiosUser.get(`/conversations/user/${userId}`);
 
-export const getCategories = async () => {
-  return axiosUser.get("/categories");
-};
+export const createConversation = async (user1Id, user2Id) =>
+    await axiosUser.post('/conversations', { user1Id, user2Id });
 
-export const getWorkerSkills = async (workerId) => {
-  return axiosUser.get(`/userSkill/worker/${workerId}`);
-};
+// ================= MESSAGES =================
+export const getMessagesByConversation = async (conversationId) =>
+    await axiosUser.get(`/messages/conversation/${conversationId}`);
 
-export const getWorkerProposals = async (workerId) => {
-  return axiosUser.get(`/Proposal/worker/${workerId}`);
-};
+export const sendMessage = async ({ conversationId, senderId, content }) =>
+    await axiosUser.post('/messages', { conversationId, senderId, content });
 
-export const createProposal = async (payload) => {
-  return axiosUser.post("/Proposal", payload);
-};
+// ================= NOTIFICATIONS =================
+export const getUserNotifications = async (userId) =>
+    await axiosUser.get(`/notifications/${userId}`);
 
-export const getWorkerServices = async (workerId) => {
-  return axiosUser.get(`/Service/worker/${workerId}`);
-};
+// ================= REVIEWS =================
+export const createReview = async (data) =>
+    await axiosUser.post('/reviews', data);
 
-export const getReviewsByReviewer = async (reviewerId) => {
-  return axiosUser.get(`/reviews/client/${reviewerId}`);
-};
+export const getGivenReviews = async (userId) =>
+    await axiosUser.get(`/reviews/client/${userId}`);
 
-export const createReview = async (payload) => {
-  return axiosUser.post("/reviews", payload);
-};
+export const getReceivedReviews = async (userId) =>
+    await axiosUser.get(`/reviews/worker/${userId}`);
 
-export const getMyServiceRequests = async (status) => {
-  const params = status ? { status } : undefined;
-  return axiosUser.get("/serviceRequest/mine", { params });
-};
+export const editReview = async (id, data) =>
+    await axiosUser.put(`/reviews/${id}`, data);
 
-export const getServiceRequestById = async (id) => {
-  return axiosUser.get(`/serviceRequest/${id}`);
-};
+// ================= REPORTS=================
+export const createReport = async (data) =>
+    await axiosUser.post('/reports', data);
 
-export const createServiceRequest = async (formData) => {
-  return axiosUser.post("/serviceRequest", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
+export const getCreatedReports = async (userId) =>
+    await axiosUser.get(`/reports/created/${userId}`);
 
-export const getProposalsForRequest = async (serviceRequestId) => {
-  return axiosUser.get(`/Proposal/requests/${serviceRequestId}`);
-};
-
-export const acceptProposal = async (proposalId) => {
-  return axiosUser.patch(`/Proposal/accept/${proposalId}`);
-};
-
-export const rejectProposal = async (proposalId, reason) => {
-  return axiosUser.patch(`/Proposal/reject/${proposalId}`, { reason });
-};
-
-export const getAiEstimate = async (payload) => {
-  return axiosUser.post("/ai/estimate", payload);
-};
+export const getReceivedReports = async (userId) =>
+    await axiosUser.get(`/reports/received/${userId}`);

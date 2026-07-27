@@ -1,3 +1,4 @@
+// client-user/src/app/router/AppRoutes.jsx  (ARCHIVO MODIFICADO)
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "../../features/auth/store/authStore.js";
 import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
@@ -12,6 +13,10 @@ import { FindWorkers } from "../../features/workers/components/FindWorkers.jsx";
 import { WorkerPublicProfile } from "../../features/workers/components/WorkerPublicProfile.jsx";
 import { VerificationView } from "../../features/verification/components/VerificationView.jsx";
 import { MyProfile } from "../../features/profile/components/MyProfile.jsx";
+import { MessagesHome } from "../../features/messages/components/MessagesHome.jsx";
+import { NotificationsHome } from "../../features/notifications/components/NotificationsHome.jsx";
+import { ReviewsHome } from "../../features/reviews/components/ReviewsHome.jsx";
+import { ReportsHome } from "../../features/reports/components/ReportsHome.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingAuth } = useAuthStore();
@@ -48,6 +53,10 @@ export const AppRoutes = () => {
         <Route path="worker/:id" element={<WorkerPublicProfile />} />
         <Route path="verification" element={<VerificationView />} />
         <Route path="profile" element={<MyProfile />} />
+        <Route path="messages" element={<MessagesHome />} />
+        <Route path="notifications" element={<NotificationsHome />} />
+        <Route path="reviews" element={<ReviewsHome />} />
+        <Route path="reports" element={<ReportsHome />} />
       </Route>
 
       <Route path="*" element={<h1>Página no encontrada</h1>} />
