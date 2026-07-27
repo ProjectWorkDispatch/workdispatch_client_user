@@ -1,5 +1,6 @@
 import { axiosAuth, axiosUser } from "./api";
 
+
 const tryPostPaths = async (paths, data, config = {}) => {
     let lastError;
     for (const path of paths) {
@@ -49,4 +50,16 @@ export const verifyEmail = async (token) => {
 
 export const resendVerification = async (email) => {
     return await postAuth("resend-verification", { email });
+};
+
+export const registerUserProfile = async (data) => {
+    const fd = new FormData();
+    fd.append("firstName", data.firstName);
+    fd.append("lastName", data.lastName);
+    fd.append("email", data.email);
+    fd.append("phone", data.phone);
+    fd.append("role", data.role);
+    fd.append("password", data.password);
+
+    return await axiosUser.post("/users/register", fd);   // sin headers
 };
