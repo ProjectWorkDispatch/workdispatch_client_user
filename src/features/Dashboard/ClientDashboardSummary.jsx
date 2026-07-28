@@ -11,6 +11,7 @@ import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { DashboardStats } from "./DashboardStats";
 import { NewServiceRequestModal } from "./NewServiceRequestModal";
+import { ServiceRequestDetailModal } from "./ServiceRequestDetailModal";
 import { getMyServiceRequests, getCategories } from "../../shared/api/user";
 
 const STATUS_BADGE = {
@@ -25,15 +26,16 @@ export const ClientDashboardSummary = () => {
   const [openModal, setOpenModal] = useState(false);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   const fetchData = async () => {
     try {
-      const [requestsRes, categoriesRes] = await Promise.all([
+      const [requestsRes] = await Promise.all([
         getMyServiceRequests(),
         getCategories(),
       ]);
       setRequests(requestsRes.data.data || []);
-    } catch (error) {
+    } catch {
       toast.error("Error al cargar tus solicitudes");
     } finally {
       setLoading(false);
@@ -92,7 +94,11 @@ export const ClientDashboardSummary = () => {
         <>
           <div className="space-y-4">
             {recentRequests.map((req) => (
-              <Card key={req._id}>
+              <Card
+                key={req._id}
+                className="cursor-pointer hover:border-yellow-400 hover:shadow-md transition-all"
+                onClick={() => setSelectedRequest(req)}
+              >
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
@@ -122,6 +128,13 @@ export const ClientDashboardSummary = () => {
         open={openModal}
         onClose={() => setOpenModal(false)}
         onCreated={fetchData}
+      />
+
+      <ServiceRequestDetailModal
+        open={!!selectedRequest}
+        onClose={() => setSelectedRequest(null)}
+        serviceRequestId={selectedRequest?._id || null}
+        onActionTaken={fetchData}
       />
     </div>
   );

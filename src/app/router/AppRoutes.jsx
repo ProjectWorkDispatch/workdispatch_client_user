@@ -6,9 +6,8 @@ import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { MyRequestsPage } from "../../features/Dashboard/MyRequestsPage.jsx";
 import { ServiceRequestDetailPage } from "../../features/Dashboard/ServiceRequestDetailPage.jsx";
-import { WorkerOffersPage } from "../../features/Proposals/Worker/WorkerOffersPage.jsx";
-import { WorkerServicesPage } from "../../features/Services/Worker/WorkerServicesPage.jsx";
-import { DashboardHome } from "../../features/dashboard/components/DashboardHome.jsx";
+import { WorkerMyJobsPage } from "../../features/Dashboard/Worker/WorkerMyJobsPage.jsx";
+import { DashboardHome } from "../../features/Dashboard/DashboardHome.jsx";
 import { FindWorkers } from "../../features/workers/components/FindWorkers.jsx";
 import { WorkerPublicProfile } from "../../features/workers/components/WorkerPublicProfile.jsx";
 import { VerificationView } from "../../features/verification/components/VerificationView.jsx";
@@ -46,8 +45,7 @@ export const AppRoutes = () => {
         <Route index element={<DashboardHome />} />
         <Route path="my-requests" element={<MyRequestsPage />} />
         <Route path="my-requests/:id" element={<ServiceRequestDetailPage />} />
-        <Route path="my-offers" element={<WorkerOffersPage />} />
-        <Route path="my-services" element={<WorkerServicesPage />} />
+        <Route path="my-jobs" element={<WorkerMyJobsPage />} />
 
         <Route path="find-workers" element={<FindWorkers />} />
         <Route path="worker/:id" element={<WorkerPublicProfile />} />

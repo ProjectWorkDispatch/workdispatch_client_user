@@ -23,12 +23,6 @@ const getArrayFromResponse = (response, keys = []) => {
   return [];
 };
 
-const getId = (value) => {
-  if (!value) return "";
-  if (typeof value === "string") return value;
-  return value._id || value.id || value.Id || "";
-};
-
 const getUserId = (user) => user?.id || user?._id || user?.userId || user?.Id;
 
 const formatMoney = (value) => {

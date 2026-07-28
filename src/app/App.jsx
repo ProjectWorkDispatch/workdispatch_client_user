@@ -1,12 +1,7 @@
 
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../assets/vite.svg'
-import heroImg from '../assets/hero.png'
+import { Toaster } from 'react-hot-toast';
 import './App.css'
-import { AuthPage } from '../features/auth/pages/AuthPage'
 import { AppRoutes } from './router/AppRoutes'
-import { toast, Toaster } from 'react-hot-toast';
 
 
 function App() {
@@ -15,6 +10,9 @@ function App() {
     <>
       <Toaster 
       position="top-center"
+      containerStyle={{
+        zIndex: 100000,
+      }}
       toastOptions={{
         style: {
           fontFamily: "inherit",

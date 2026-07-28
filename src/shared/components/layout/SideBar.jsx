@@ -30,7 +30,7 @@ export const Sidebar = () => {
   return (
     <aside className="w-60 bg-white min-h-[calc(100vh-4rem)] p-4 shadow-sm hidden md:block">
       <ul className="space-y-1">
-        {items.map(({ label, to, icon: Icon, end }) => (
+        {items.map(({ label, to, icon: Icon, end }) => ( // eslint-disable-line no-unused-vars
           <li key={to}>
             <NavLink
               to={to}
