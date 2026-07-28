@@ -13,6 +13,9 @@ import {
   rejectProposal,
 } from "../../shared/api/user";
 import { STATUS_BADGE, formatRelativeDate } from "../../shared/utils/statusBadge";
+import { useAuthStore } from "../auth/store/authStore";
+import { useMessagesStore } from "../../shared/store/userStore.js";
+import { useRequireVerification } from "../verification/hooks/useRequireVerification";
 
 const StarRating = ({ rating }) => {
   if (!rating) return <span className="text-sm text-gray-400">Sin calificación</span>;
@@ -36,13 +39,19 @@ const StarRating = ({ rating }) => {
 export const ServiceRequestDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const { requireVerification } = useRequireVerification();
+  const startConversation = useMessagesStore((s) => s.startConversation);
+  const currentUserId = user?._id || user?.id;
+
   const [serviceRequest, setServiceRequest] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
-  const [rejectTarget, setRejectTarget] = useState(null); // proposalId o null
+  const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [messaging, setMessaging] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -71,6 +80,7 @@ export const ServiceRequestDetailPage = () => {
   }, [id]);
 
   const handleAccept = async (proposalId) => {
+    if (!requireVerification("aceptar una propuesta")) return;
     setActionLoading(proposalId);
     try {
       await acceptProposal(proposalId);
@@ -84,6 +94,7 @@ export const ServiceRequestDetailPage = () => {
   };
 
   const handleReject = async (proposalId, reason) => {
+    if (!requireVerification("rechazar una propuesta")) return;
     setActionLoading(proposalId);
     try {
       await rejectProposal(proposalId, reason);
@@ -96,6 +107,21 @@ export const ServiceRequestDetailPage = () => {
       toast.error(err.response?.data?.message || "Error al rechazar propuesta");
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleChatWithWorker = async (workerId) => {
+    if (!currentUserId || !workerId) return;
+    setMessaging(true);
+    try {
+      const conversation = await startConversation(currentUserId, workerId);
+      if (conversation) {
+        navigate("/dashboard/messages", { state: { conversation } });
+      }
+    } catch {
+      toast.error("No se pudo iniciar la conversación con el trabajador");
+    } finally {
+      setMessaging(false);
     }
   };
 
@@ -190,7 +216,7 @@ export const ServiceRequestDetailPage = () => {
                 <MapPicker
                   lat={serviceRequest.latitude}
                   lng={serviceRequest.longitude}
-                  onLocationChange={() => {}}
+                  onLocationChange={() => { }}
                   readOnly
                 />
               </CardContent>
@@ -224,7 +250,6 @@ export const ServiceRequestDetailPage = () => {
           <Card>
             <CardContent className="p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Ofertas recibidas</h2>
-
               {serviceRequest.status !== "OPEN" && acceptedProposal ? (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <p className="text-green-800 font-medium mb-2">Oferta aceptada</p>
@@ -237,6 +262,14 @@ export const ServiceRequestDetailPage = () => {
                     {acceptedProposal.message && (
                       <p className="text-sm text-gray-600 italic">"{acceptedProposal.message}"</p>
                     )}
+                    <Button
+                      size="sm"
+                      className="w-full mt-2"
+                      onClick={() => handleChatWithWorker(acceptedProposal.workerId?._id)}
+                      disabled={messaging}
+                    >
+                      {messaging ? "Abriendo..." : "Chatear con el trabajador"}
+                    </Button>
                   </div>
                 </div>
               ) : serviceRequest.status === "OPEN" && pendingProposals.length > 0 ? (

@@ -52,6 +52,7 @@ export const ReportModal = ({ open, onClose, reporteredId, reporteredName, onSuc
             toast.success("Reporte enviado. El equipo lo revisará pronto.");
             reset();
             onSuccess?.();
+            onClose?.();
         } else {
             toast.error(result.error);
         }
