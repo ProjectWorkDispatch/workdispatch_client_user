@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import * as api from '../api/user.js';
 
 // ================= MESSAGES STORE =================
@@ -75,39 +74,47 @@ export const useMessagesStore = create((set, get) => ({
 }));
 
 // ================= NOTIFICATIONS STORE =================
-export const useNotificationsStore = create(
-    persist(
-        (set, get) => ({
-            notifications: [],
-            readIds: [],
-            loading: false,
-            error: null,
+export const useNotificationsStore = create((set, get) => ({
+    notifications: [],
+    loading: false,
+    error: null,
 
-            getNotifications: async (userId) => {
-                try {
-                    set({ loading: true, error: null });
-                    const res = await api.getUserNotifications(userId);
-                    set({ notifications: res.data?.notifications || [], loading: false });
-                } catch (error) {
-                    set({ error: error.response?.data?.message || 'Error al obtener notificaciones', loading: false });
-                }
-            },
+    getNotifications: async (userId) => {
+        try {
+            set({ loading: true, error: null });
+            const res = await api.getUserNotifications(userId);
+            set({ notifications: res.data?.notifications || [], loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Error al obtener notificaciones', loading: false });
+        }
+    },
 
-            markAsRead: (id) => {
-                if (get().readIds.includes(id)) return;
-                set({ readIds: [...get().readIds, id] });
-            },
+    markAsRead: async (id) => {
+        try {
+            await api.markNotificationAsRead(id);
+            set({
+                notifications: get().notifications.map((n) =>
+                    n._id === id ? { ...n, isRead: true } : n
+                ),
+            });
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    },
 
-            markAllAsRead: () => {
-                const allIds = get().notifications.map((n) => n._id);
-                set({ readIds: Array.from(new Set([...get().readIds, ...allIds])) });
-            },
+    markAllAsRead: async (userId) => {
+        try {
+            await api.markAllNotificationsAsRead(userId);
+            set({
+                notifications: get().notifications.map((n) => ({ ...n, isRead: true })),
+            });
+        } catch (error) {
+            console.error('Error marking all notifications as read:', error);
+        }
+    },
 
-            clearError: () => set({ error: null }),
-        }),
-        { name: 'notifications-read-store' }
-    )
-);
+    clearError: () => set({ error: null }),
+}));
 
 // ================= REVIEWS STORE =================
 export const useReviewsStore = create((set, get) => ({
@@ -182,4 +189,37 @@ export const useReportsStore = create((set, get) => ({
     },
 
     clearError: () => set({ error: null }),
+}));
+
+// ================= FAVORITES STORE =================
+export const useFavoritesStore = create((set, get) => ({
+    favorites: [],
+    loading: false,
+    error: null,
+
+    getMyFavorites: async (clientId) => {
+        try {
+            set({ loading: true, error: null });
+            const res = await api.getMyFavorites(clientId);
+            set({ favorites: res.data?.favorites || [], loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Error al obtener favoritos', loading: false });
+        }
+    },
+
+    toggleFavorite: async (clientId, workerId) => {
+        const isFav = get().favorites.some((f) => (f.workerId?._id || f.workerId) === workerId);
+        try {
+            if (isFav) {
+                await api.removeFavorite(clientId, workerId);
+                set({ favorites: get().favorites.filter((f) => (f.workerId?._id || f.workerId) !== workerId) });
+            } else {
+                const res = await api.addFavorite(clientId, workerId);
+                set({ favorites: [...get().favorites, res.data.favorite] });
+            }
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Error al actualizar favoritos' };
+        }
+    },
 }));

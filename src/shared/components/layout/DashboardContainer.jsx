@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 
@@ -16,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 import { useAuthStore } from "../../../features/auth/store/authStore";
+import { useNotificationsStore } from "../../store/userStore.js";
 import { Button } from "../ui/Button";
 
 /* ------------------------------------------------------------------ */
@@ -25,14 +26,12 @@ const CLIENT_NAV = [
   { label: "Inicio", to: "/dashboard", icon: HomeIcon },
   { label: "Mis Solicitudes", to: "/dashboard/my-requests", icon: ClipboardDocumentListIcon },
   { label: "Buscar Trabajadores", to: "/dashboard/find-workers", icon: MagnifyingGlassIcon },
-  { label: "Mis Contratos", to: "/dashboard/my-services", icon: BriefcaseIcon },
   { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
 ];
 
 const WORKER_NAV = [
   { label: "Trabajos Disponibles", to: "/dashboard", icon: BriefcaseIcon },
-  { label: "Mis Ofertas", to: "/dashboard/my-offers", icon: ClipboardDocumentListIcon },
-  { label: "Mis Servicios", to: "/dashboard/my-services", icon: BriefcaseIcon },
+  { label: "Mis Trabajos", to: "/dashboard/my-jobs", icon: ClipboardDocumentListIcon },
   { label: "Verificación", to: "/dashboard/verification", icon: ShieldCheckIcon },
 
   { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
@@ -46,6 +45,21 @@ const DashboardHeader = () => {
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const notifications = useNotificationsStore((s) => s.notifications);
+  const getNotifications = useNotificationsStore((s) => s.getNotifications);
+
+  const currentUserId = user?._id || user?.id;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    getNotifications(currentUserId);
+    const interval = setInterval(() => {
+      getNotifications(currentUserId);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [currentUserId]);
 
   const navigationItems = user?.role === "WORKER" ? WORKER_NAV : CLIENT_NAV;
   const isActive = (path) => location.pathname === path;
@@ -102,10 +116,15 @@ const DashboardHeader = () => {
                 <ChatBubbleLeftRightIcon className="size-5" />
               </Button>
             </Link>
-            <Link to="/dashboard/notifications">
+            <Link to="/dashboard/notifications" className="relative">
               <Button variant="ghostDark" size="icon" className="rounded-full">
                 <BellIcon className="size-5" />
               </Button>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-yellow-500 text-gray-900 text-[10px] font-bold px-1">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Link>
 
             <div className="hidden sm:flex items-center bg-gray-700/50 border border-yellow-500/30 px-3 py-1.5 rounded-full text-sm font-medium text-yellow-400">

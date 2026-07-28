@@ -1,4 +1,3 @@
-// client-user/src/features/notifications/components/NotificationsHome.jsx  (ARCHIVO NUEVO)
 import { useEffect } from "react";
 import { BellIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { useAuthStore } from "../../auth/store/authStore";
@@ -11,14 +10,14 @@ export const NotificationsHome = () => {
     const { user } = useAuthStore();
     const currentUserId = user?._id || user?.id;
 
-    const { notifications, readIds, loading, getNotifications, markAsRead, markAllAsRead } =
+    const { notifications, loading, getNotifications, markAsRead, markAllAsRead } =
         useNotificationsStore();
 
     useEffect(() => {
         if (currentUserId) getNotifications(currentUserId);
     }, [currentUserId]);
 
-    const unreadCount = notifications.filter((n) => !readIds.includes(n._id)).length;
+    const unreadCount = notifications.filter((n) => !n.isRead).length;
 
     return (
         <div className="space-y-6">
@@ -30,7 +29,7 @@ export const NotificationsHome = () => {
                     </p>
                 </div>
                 {unreadCount > 0 && (
-                    <Button variant="outline" size="sm" onClick={markAllAsRead}>
+                    <Button variant="outline" size="sm" onClick={() => markAllAsRead(currentUserId)}>
                         <CheckCircleIcon className="size-4" />
                         Marcar todas como leídas
                     </Button>
@@ -57,7 +56,6 @@ export const NotificationsHome = () => {
                             <NotificationItem
                                 key={n._id}
                                 notification={n}
-                                read={readIds.includes(n._id)}
                                 onRead={markAsRead}
                             />
                         ))}
