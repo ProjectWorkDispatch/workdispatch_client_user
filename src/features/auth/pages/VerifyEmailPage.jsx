@@ -4,17 +4,12 @@ import { verifyEmail } from "../../../shared/api";
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState("loading");
-  const [message, setMessage] = useState("");
+  const token = searchParams.get("token");
+  const [status, setStatus] = useState(token ? "loading" : "error");
+  const [message, setMessage] = useState(token ? "" : "Token de verificación no encontrado.");
 
   useEffect(() => {
-    const token = searchParams.get("token");
-
-    if (!token) {
-      setStatus("error");
-      setMessage("Token de verificación no encontrado.");
-      return;
-    }
+    if (!token) return;
 
     verifyEmail(token)
       .then(() => {
@@ -26,7 +21,7 @@ const VerifyEmailPage = () => {
         const msg = error.response?.data?.message || "Error al verificar el correo. El enlace puede haber expirado.";
         setMessage(msg);
       });
-  }, [searchParams]);
+  }, [token, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4">

@@ -3,6 +3,8 @@ import { Modal } from "../../shared/components/ui/Modal";
 import { Button } from "../../shared/components/ui/Button";
 import { MapPicker } from "../../shared/components/ui/MapPicker";
 import { getCategories, createServiceRequest, getAiEstimate } from "../../shared/api/user";
+import { useRequireVerification } from "../verification/hooks/useRequireVerification";
+import { sanitizeLettersOnly, blockInvalidNumberKeys } from "../../shared/utils/inputRestrictions.js";
 import toast from "react-hot-toast";
 
 const INITIAL_FORM = {
@@ -28,6 +30,7 @@ const INITIAL_ERRORS = {
 };
 
 export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
+  const { requireVerification } = useRequireVerification();
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState(INITIAL_ERRORS);
   const [categories, setCategories] = useState([]);
@@ -91,7 +94,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
         budgetMax: String(data.budgetMax ?? prev.budgetMax)
       }));
       toast.success(`Estimado: ${data.estimatedTime}`);
-    } catch (error) {
+    } catch {
       toast.error("No se pudo generar el estimado con IA");
     } finally {
       setAiLoading(false);
@@ -120,6 +123,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    if (!requireVerification("crear una solicitud")) return;
 
     const fd = new FormData();
     fd.append("title", form.title);
@@ -222,7 +226,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
                   type="text"
                   name="customCategory"
                   value={form.customCategory}
-                  onChange={handleChange}
+                  onChange={(e) => setForm((prev) => ({ ...prev, customCategory: sanitizeLettersOnly(e.target.value) }))}
                   placeholder="Escribí tu categoría personalizada"
                   maxLength={100}
                   className="w-full mt-2 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
@@ -270,6 +274,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
               name="budgetMin"
               value={form.budgetMin}
               onChange={handleChange}
+              onKeyDown={blockInvalidNumberKeys}
               min="0"
               step="any"
               placeholder="0"
@@ -284,6 +289,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
               name="budgetMax"
               value={form.budgetMax}
               onChange={handleChange}
+              onKeyDown={blockInvalidNumberKeys}
               min="0"
               step="any"
               placeholder="0"

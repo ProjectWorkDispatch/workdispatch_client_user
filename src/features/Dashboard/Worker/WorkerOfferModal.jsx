@@ -4,6 +4,8 @@ import { SparklesIcon } from "@heroicons/react/24/outline";
 import { Button } from "../../../shared/components/ui/Button";
 import { Modal } from "../../../shared/components/ui/Modal";
 import { createProposal, getAiEstimate } from "../../../shared/api/user";
+import { useRequireVerification } from "../../verification/hooks/useRequireVerification";
+import { blockInvalidNumberKeys } from "../../../shared/utils/inputRestrictions.js";
 
 const getId = (value) => {
   if (!value) return "";
@@ -66,6 +68,7 @@ export const WorkerOfferModal = ({
   hasExistingProposal,
   onCreated,
 }) => {
+  const { requireVerification } = useRequireVerification();
   const [price, setPrice] = useState("");
   const [estimatedTime, setEstimatedTime] = useState("");
   const [message, setMessage] = useState("");
@@ -104,7 +107,7 @@ export const WorkerOfferModal = ({
       if (!price) setPrice(String(data.budgetMax ?? data.budgetMin ?? ""));
       if (!estimatedTime.trim()) setEstimatedTime(data.estimatedTime || "");
       setMessage(data.suggestedMessage || buildAiMessage(job, data.estimatedTime));
-    } catch (error) {
+    } catch {
       toast.error("No se pudo generar el estimado con IA");
       const suggestedPrice = getSuggestedPrice(job);
       const suggestedTime = estimatedTime.trim() || getSuggestedTime(job);
@@ -119,6 +122,7 @@ export const WorkerOfferModal = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    if (!requireVerification("enviar una propuesta")) return;
 
     const numericPrice = Number(price);
 
@@ -202,6 +206,7 @@ export const WorkerOfferModal = ({
               step="0.01"
               value={price}
               onChange={(event) => setPrice(event.target.value)}
+              onKeyDown={blockInvalidNumberKeys}
               placeholder="Ej. 350"
               className="h-11 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
               disabled={hasExistingProposal || submitting}

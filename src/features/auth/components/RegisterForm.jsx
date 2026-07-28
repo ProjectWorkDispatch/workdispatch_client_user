@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore.js";
+import { sanitizeLettersOnly, sanitizePhone } from "../../../shared/utils/inputRestrictions.js";
 
 export const RegisterForm = ({ onRegister }) => {
   const { register, loading } = useAuthStore();
@@ -64,7 +65,7 @@ export const RegisterForm = ({ onRegister }) => {
             type="text"
             name="firstName"
             value={form.firstName}
-            onChange={handleChange}
+            onChange={(e) => setForm({ ...form, firstName: sanitizeLettersOnly(e.target.value) })}
             placeholder="Juan"
             className="w-full px-3 py-2 text-sm bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
@@ -75,7 +76,7 @@ export const RegisterForm = ({ onRegister }) => {
             type="text"
             name="lastName"
             value={form.lastName}
-            onChange={handleChange}
+            onChange={(e) => setForm({ ...form, lastName: sanitizeLettersOnly(e.target.value) })}
             placeholder="Pérez"
             className="w-full px-3 py-2 text-sm bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
@@ -98,11 +99,11 @@ export const RegisterForm = ({ onRegister }) => {
       {/* Teléfono */}
       <div className="space-y-1">
         <label className="block text-xs font-medium text-gray-300">Teléfono *</label>
-        <input
+          <input
           type="tel"
           name="phone"
           value={form.phone}
-          onChange={handleChange}
+          onChange={(e) => setForm({ ...form, phone: sanitizePhone(e.target.value) })}
           placeholder="+502 7845 1234"
           className="w-full px-3 py-2 text-sm bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />

@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon, FlagIcon } from '@heroicons/react/24/outline';
 import { axiosUser } from '../../../shared/api/api';
+import { getCreatedReports, getReceivedReports } from '../../../shared/api/user';
 import { useAuthStore } from '../../auth/store/authStore';
 import { Button } from '../../../shared/components/ui/Button';
 import { Modal } from '../../../shared/components/ui/Modal';
 import {
   Card, CardHeader, CardTitle, CardDescription, CardContent, Badge,
 } from '../../../shared/components/layout/DashboardContainer';
+import { sanitizeLettersOnly, sanitizePhone, blockInvalidNumberKeys } from '../../../shared/utils/inputRestrictions.js';
 import toast from 'react-hot-toast';
 
 export const MyProfile = () => {
-  const { user, token } = useAuthStore();
-  const userId = user?._id || user?.id;
+  const { user } = useAuthStore();
   const isWorker = user?.role === 'WORKER';
 
   const [profile, setProfile] = useState(null);
@@ -43,6 +44,11 @@ export const MyProfile = () => {
   const [selectedSkill, setSelectedSkill] = useState('');
   const [experienceYears, setExperienceYears] = useState('');
 
+  // Reportes
+  const [sentReports, setSentReports] = useState([]);
+  const [receivedReports, setReceivedReports] = useState([]);
+  const [reportsTab, setReportsTab] = useState('received');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +77,13 @@ export const MyProfile = () => {
                 setSkillsCatalog(catRes.data?.data || []);
                 setMySkills(mySkillsRes.data?.data || []);
             }
+
+            const [sentRes, receivedRes] = await Promise.all([
+                getCreatedReports(u._id).catch(() => ({ data: { reports: [] } })),
+                getReceivedReports(u._id).catch(() => ({ data: { reports: [] } })),
+            ]);
+            setSentReports(sentRes.data?.reports || []);
+            setReceivedReports(receivedRes.data?.reports || []);
         } catch {
             toast.error('Error al cargar el perfil');
         } finally {
@@ -281,11 +294,11 @@ export const MyProfile = () => {
           {/* Campos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { label: 'Nombre', key: 'firstName', placeholder: 'Tu nombre' },
-              { label: 'Apellido', key: 'lastName', placeholder: 'Tu apellido' },
-              { label: 'Teléfono', key: 'phone', placeholder: 'Ej: +502 5555-5555' },
+              { label: 'Nombre', key: 'firstName', placeholder: 'Tu nombre', sanitize: sanitizeLettersOnly },
+              { label: 'Apellido', key: 'lastName', placeholder: 'Tu apellido', sanitize: sanitizeLettersOnly },
+              { label: 'Teléfono', key: 'phone', placeholder: 'Ej: +502 5555-5555', sanitize: sanitizePhone },
               { label: 'Dirección / Ubicación', key: 'address', placeholder: 'Ciudad, Zona, País' },
-            ].map(({ label, key, placeholder }) => (
+            ].map(({ label, key, placeholder, sanitize }) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
                 <input
@@ -293,7 +306,7 @@ export const MyProfile = () => {
                   placeholder={placeholder}
                   value={form[key]}
                   disabled={!isEditing}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  onChange={(e) => setForm({ ...form, [key]: sanitize ? sanitize(e.target.value) : e.target.value })}
                   className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
@@ -345,6 +358,7 @@ export const MyProfile = () => {
                     placeholder="Años"
                     value={experienceYears}
                     onChange={(e) => setExperienceYears(e.target.value)}
+                    onKeyDown={blockInvalidNumberKeys}
                     className="w-24 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
                   />
                   <Button size="sm" onClick={handleAddSkill}>Agregar</Button>
@@ -491,6 +505,87 @@ export const MyProfile = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Reportes */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FlagIcon className="size-5 text-yellow-500" />
+            Reportes
+          </CardTitle>
+          <CardDescription>Reportes enviados y recibidos</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setReportsTab('received')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                reportsTab === 'received'
+                  ? 'bg-yellow-500 text-gray-900'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+              }`}
+            >
+              Recibidos ({receivedReports.length})
+            </button>
+            <button
+              onClick={() => setReportsTab('sent')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                reportsTab === 'sent'
+                  ? 'bg-yellow-500 text-gray-900'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+              }`}
+            >
+              Enviados ({sentReports.length})
+            </button>
+          </div>
+
+          {reportsTab === 'received' && (
+            receivedReports.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-6">No tienes reportes recibidos</p>
+            ) : (
+              <div className="space-y-3">
+                {receivedReports.map((r) => (
+                  <div key={r._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-gray-800">
+                        De: {r.reporterId?.firstName || 'Usuario'}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-gray-700">{r.Reason}</p>
+                    {r.Description && <p className="text-sm text-gray-500 mt-1">{r.Description}</p>}
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+
+          {reportsTab === 'sent' && (
+            sentReports.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-6">No has enviado reportes</p>
+            ) : (
+              <div className="space-y-3">
+                {sentReports.map((r) => (
+                  <div key={r._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-gray-800">
+                        Contra: {r.reporteredId?.firstName || 'Usuario'}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-gray-700">{r.Reason}</p>
+                    {r.Description && <p className="text-sm text-gray-500 mt-1">{r.Description}</p>}
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

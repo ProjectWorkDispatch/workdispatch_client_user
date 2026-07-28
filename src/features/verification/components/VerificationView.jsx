@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
 };
 
 export const VerificationView = () => {
-  const { user } = useAuthStore();
+  const { user, refreshUser } = useAuthStore();
   const [verification, setVerification] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +27,11 @@ export const VerificationView = () => {
     const fetchVerification = async () => {
       try {
         const res = await axiosUser.get(`/verifications/${user?._id || user?.id}`);
-        setVerification(res.data?.data || res.data);
+        const verifData = res.data?.data || res.data;
+        setVerification(verifData);
+        if (verifData?.status === 'APPROVED' && user?.verificationStatus !== true) {
+          refreshUser();
+        }
       } catch {
         setVerification(null);
       } finally {

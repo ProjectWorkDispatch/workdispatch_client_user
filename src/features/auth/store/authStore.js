@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import toast from 'react-hot-toast';
 
-import { login as loginRequest, register as registerRequest, registerUserProfile } from "../../../shared/api";
+import { login as loginRequest, register as registerRequest, registerUserProfile, getWorkerById } from "../../../shared/api";
 const ALLOWED_ROLES = ["CLIENT", "WORKER"];
 
 export const useAuthStore = create(
@@ -35,6 +35,20 @@ export const useAuthStore = create(
                         isLoadingAuth: false,
                         error: "No tienes permiso para acceder a esta sección"
                     });
+                }
+            },
+
+            refreshUser: async () => {
+                try {
+                    const currentUser = get().user;
+                    if (!currentUser?._id && !currentUser?.id) return;
+                    const { data } = await getWorkerById(currentUser._id || currentUser.id);
+                    const updatedUser = data?.data || data;
+                    if (updatedUser) {
+                        set({ user: updatedUser });
+                    }
+                } catch (error) {
+                    console.error('Error refreshing user:', error);
                 }
             },
 
