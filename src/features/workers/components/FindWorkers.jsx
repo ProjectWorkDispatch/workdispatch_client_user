@@ -1,13 +1,16 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MagnifyingGlassIcon, StarIcon, MapPinIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, StarIcon, MapPinIcon, UserCircleIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { axiosUser } from '../../../shared/api/api';
 import { Button } from '../../../shared/components/ui/Button';
 import {
   Card, CardContent, Badge,
 } from '../../../shared/components/layout/DashboardContainer';
+import { useAuthStore } from '../../auth/store/authStore';
+import { useFavoritesStore } from '../../../shared/store/userStore.js';
 
 const DEFAULT_PHOTO = 'https://ui-avatars.com/api/?background=EAB308&color=111827&size=128&bold=true';
 
@@ -24,23 +27,21 @@ const StarRating = ({ rating = 1 }) => (
 
 export const FindWorkers = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const currentUserId = user?._id || user?.id;
+  const { favorites, getMyFavorites, toggleFavorite } = useFavoritesStore();
   const [workers, setWorkers] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
   const [filterRating, setFilterRating] = useState('');
+  const [viewMode, setViewMode] = useState('all');
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [wRes, cRes] = await Promise.all([
-          axiosUser.get('/users'),
-          axiosUser.get('/categories'),
-        ]);
+        const wRes = await axiosUser.get('/users');
         const allUsers = wRes.data?.data || wRes.data || [];
         setWorkers(allUsers.filter((u) => u.role === 'WORKER'));
-        setCategories(cRes.data?.data || cRes.data || []);
       } catch {
         setWorkers([]);
       } finally {
@@ -48,7 +49,8 @@ export const FindWorkers = () => {
       }
     };
     fetchAll();
-  }, []);
+    if (currentUserId) getMyFavorites(currentUserId);
+  }, [currentUserId]);
 
   const filtered = workers.filter((w) => {
     const matchSearch =
@@ -57,7 +59,8 @@ export const FindWorkers = () => {
       w.description?.toLowerCase().includes(search.toLowerCase()) ||
       w.address?.toLowerCase().includes(search.toLowerCase());
     const matchRating = !filterRating || w.ratingAverage >= Number(filterRating);
-    return matchSearch && matchRating;
+    const matchFav = viewMode !== 'favoritos' || favorites.some((f) => (f.workerId?._id || f.workerId) === w._id);
+    return matchSearch && matchRating && matchFav;
   });
 
   return (
@@ -70,6 +73,28 @@ export const FindWorkers = () => {
 
       {/* Filtros */}
       <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setViewMode('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              viewMode === 'all'
+                ? 'bg-yellow-500 text-gray-900'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setViewMode('favoritos')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              viewMode === 'favoritos'
+                ? 'bg-yellow-500 text-gray-900'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+            }`}
+          >
+            Favoritos ({favorites.length})
+          </button>
+        </div>
         <div className="relative flex-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
           <input
@@ -118,9 +143,22 @@ export const FindWorkers = () => {
             return (
               <Card
                 key={worker._id}
-                className="hover:shadow-md hover:border-yellow-200 transition-all duration-200 cursor-pointer"
+                className="hover:shadow-md hover:border-yellow-200 transition-all duration-200 cursor-pointer relative"
                 onClick={() => navigate(`/dashboard/worker/${worker._id}`)}
               >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (currentUserId) toggleFavorite(currentUserId, worker._id);
+                  }}
+                  className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors"
+                >
+                  {favorites.some((f) => (f.workerId?._id || f.workerId) === worker._id) ? (
+                    <HeartSolid className="size-5 text-red-500" />
+                  ) : (
+                    <HeartIcon className="size-5 text-gray-400 hover:text-red-400" />
+                  )}
+                </button>
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     {/* Avatar */}

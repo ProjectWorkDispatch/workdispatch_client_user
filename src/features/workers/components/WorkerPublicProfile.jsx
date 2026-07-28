@@ -5,13 +5,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeftIcon, StarIcon, MapPinIcon, PhoneIcon,
   CheckBadgeIcon, BriefcaseIcon, ChatBubbleLeftRightIcon,
+  ClockIcon, CalendarDaysIcon, ArrowPathIcon, UserGroupIcon,
+  HeartIcon, FlagIcon,
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import { StarIcon as StarSolid, HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { axiosUser } from '../../../shared/api/api';
+import { getWorkerTrustStats } from '../../../shared/api/user';
 import { Button } from '../../../shared/components/ui/Button';
 import {
   Card, CardHeader, CardTitle, CardContent, CardDescription, Badge,
 } from '../../../shared/components/layout/DashboardContainer';
+import { useAuthStore } from '../../auth/store/authStore';
+import { useMessagesStore } from '../../../shared/store/userStore.js';
+import { useFavoritesStore } from '../../../shared/store/userStore.js';
+import { deriveTrustBadges } from '../utils/trustBadges';
+import { ReportModal } from '../../reports/components/ReportModal';
+import toast from 'react-hot-toast';
 
 const StarRating = ({ rating = 1, size = 'sm' }) => {
   const s = size === 'sm' ? 'size-3.5' : 'size-5';
@@ -36,21 +45,49 @@ export const WorkerPublicProfile = () => {
   const [portfolio, setPortfolio] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [trustStats, setTrustStats] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const { user } = useAuthStore();
+  const startConversation = useMessagesStore((s) => s.startConversation);
+  const { favorites, toggleFavorite } = useFavoritesStore();
+  const currentUserId = user?._id || user?.id;
+
+  const [messaging, setMessaging] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+
+  const isFavorited = favorites.some((f) => (f.workerId?._id || f.workerId) === id);
+
+  const handleMessage = async () => {
+    if (!currentUserId || !worker?._id) return;
+    setMessaging(true);
+    try {
+      const conversation = await startConversation(currentUserId, worker._id);
+      if (conversation) {
+        navigate('/dashboard/messages', { state: { conversation } });
+      }
+    } catch {
+      toast.error('No se pudo iniciar la conversación con este trabajador');
+    } finally {
+      setMessaging(false);
+    }
+  };
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [wRes, pRes, rRes, sRes] = await Promise.all([
+        const [wRes, pRes, rRes, sRes, tRes] = await Promise.all([
           axiosUser.get(`/users/${id}`),
           axiosUser.get(`/PortFolio/${id}`).catch(() => ({ data: { data: [] } })),
           axiosUser.get(`/reviews/worker/${id}`).catch(() => ({ data: { data: [] } })),
           axiosUser.get(`/userSkill/worker/${id}`).catch(() => ({ data: { data: [] } })),
+          getWorkerTrustStats(id).catch(() => ({ data: { data: null } })),
         ]);
         setWorker(wRes.data?.data || wRes.data);
         setPortfolio(pRes.data?.data || []);
         setReviews(rRes.data?.data || []);
         setSkills(sRes.data?.data || []);
+        setTrustStats(tRes.data?.data || null);
       } catch {
         setWorker(null);
       } finally {
@@ -121,9 +158,23 @@ export const WorkerPublicProfile = () => {
                   <StarRating rating={worker.ratingAverage} size="md" />
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => navigate(`/dashboard/messages`)}>
+                  <Button size="sm" variant="outline" onClick={handleMessage} disabled={messaging}>
                     <ChatBubbleLeftRightIcon className="size-4" />
-                    Mensaje
+                    {messaging ? 'Abriendo...' : 'Mensaje'}
+                  </Button>
+                  {currentUserId && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => toggleFavorite(currentUserId, id)}
+                    >
+                      {isFavorited ? <HeartSolid className="size-4 text-red-500" /> : <HeartIcon className="size-4" />}
+                      {isFavorited ? 'Favorito' : 'Favorito'}
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline" onClick={() => setReportOpen(true)}>
+                    <FlagIcon className="size-4" />
+                    Reportar
                   </Button>
                 </div>
               </div>
@@ -156,6 +207,64 @@ export const WorkerPublicProfile = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Trust Stats + Badges */}
+      {trustStats && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+              <CheckBadgeIcon className="size-5 text-green-500 mx-auto mb-1" />
+              <p className="text-lg font-black text-gray-900">{trustStats.completedJobs}</p>
+              <p className="text-xs text-gray-500">Trabajos completados</p>
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+              <ArrowPathIcon className="size-5 text-blue-500 mx-auto mb-1" />
+              <p className="text-lg font-black text-gray-900">
+                {trustStats.completionRate != null ? `${Math.round(trustStats.completionRate * 100)}%` : "—"}
+              </p>
+              <p className="text-xs text-gray-500">Tasa de finalización</p>
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+              <ClockIcon className="size-5 text-purple-500 mx-auto mb-1" />
+              <p className="text-lg font-black text-gray-900">
+                {trustStats.avgResponseTimeHours != null ? `${trustStats.avgResponseTimeHours}h` : "—"}
+              </p>
+              <p className="text-xs text-gray-500">Tiempo prom. respuesta</p>
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+              <CalendarDaysIcon className="size-5 text-yellow-500 mx-auto mb-1" />
+              <p className="text-lg font-black text-gray-900">
+                {new Date(trustStats.memberSince).toLocaleDateString("es-GT", { month: "short", year: "numeric" })}
+              </p>
+              <p className="text-xs text-gray-500">Miembro desde</p>
+            </div>
+          </div>
+
+          {trustStats.repeatClientsCount > 0 && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <UserGroupIcon className="size-4 text-gray-400" />
+              <span>{trustStats.repeatClientsCount} cliente(s) recurrente(s)</span>
+            </div>
+          )}
+
+          {(() => {
+            const badges = deriveTrustBadges(trustStats, worker);
+            if (badges.length === 0) return null;
+            return (
+              <div className="flex flex-wrap gap-2">
+                {badges.map((b) => (
+                  <span
+                    key={b.label}
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${b.color}`}
+                  >
+                    {b.label}
+                  </span>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Habilidades */}
@@ -249,6 +358,13 @@ export const WorkerPublicProfile = () => {
           </Card>
         </div>
       </div>
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        reporteredId={worker?._id}
+        reporteredName={worker ? `${worker.firstName} ${worker.lastName}` : ''}
+      />
     </div>
   );
 };
