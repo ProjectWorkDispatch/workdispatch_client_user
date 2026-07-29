@@ -5,6 +5,7 @@ import { LoginForm } from "../components/LoginForm.jsx";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
 import { RegisterForm } from "../components/RegisterForm.jsx";
 import { ResendVerificationForm } from "../components/ResendVerificationForm.jsx";
+import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ const AuthPage = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <img
-              src="/src/assets/img/logo_Workdispatch.png"
-              alt="WorkDispach"
+              src={logoWorkDispatch}
+              alt="WorkDispatch"
               className="h-20 w-auto object-contain"
             />
           </div>

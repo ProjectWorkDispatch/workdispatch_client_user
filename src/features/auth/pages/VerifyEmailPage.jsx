@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { verifyEmail } from "../../../shared/api";
+import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
@@ -28,7 +29,7 @@ const VerifyEmailPage = () => {
       <div className="w-full max-w-md bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-8 text-center">
         <div className="flex justify-center mb-4">
           <img
-            src="/src/assets/img/logo_Workdispatch.png"
+            src={logoWorkDispatch}
             alt="WorkDispatch"
             className="h-16 w-auto object-contain"
           />

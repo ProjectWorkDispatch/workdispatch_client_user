@@ -91,7 +91,7 @@ const DashboardHeader = () => {
           </Link>
 
           {/* Navegación desktop */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden xl:flex items-center space-x-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.to);
@@ -127,7 +127,7 @@ const DashboardHeader = () => {
               )}
             </Link>
 
-            <div className="hidden sm:flex items-center bg-gray-700/50 border border-yellow-500/30 px-3 py-1.5 rounded-full text-sm font-medium text-yellow-400">
+            <div className="hidden xl:flex items-center bg-gray-700/50 border border-yellow-500/30 px-3 py-1.5 rounded-full text-sm font-medium text-yellow-400">
               {user?.role === "CLIENT" ? "Cliente" : "Trabajador"}
             </div>
 
@@ -141,7 +141,7 @@ const DashboardHeader = () => {
               onClick={handleLogout}
               variant="ghostDark"
               size="icon"
-              className="hidden md:flex hover:!text-red-400 hover:!bg-red-500/10 rounded-full"
+              className="hidden xl:flex hover:!text-red-400 hover:!bg-red-500/10 rounded-full"
               title="Cerrar Sesión"
             >
               <ArrowRightOnRectangleIcon className="size-5" />
@@ -150,7 +150,7 @@ const DashboardHeader = () => {
             <Button
               variant="ghostDark"
               size="icon"
-              className="md:hidden rounded-full"
+              className="xl:hidden rounded-full"
               onClick={() => setMobileMenuOpen((v) => !v)}
             >
               {mobileMenuOpen ? <XMarkIcon className="size-5" /> : <Bars3Icon className="size-5" />}
@@ -161,7 +161,7 @@ const DashboardHeader = () => {
 
       {/* Panel móvil */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-gray-900 border-t border-gray-700 px-4 py-4">
+        <div className="xl:hidden bg-gray-900 border-t border-gray-700 px-4 py-4">
           <nav className="flex flex-col gap-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;

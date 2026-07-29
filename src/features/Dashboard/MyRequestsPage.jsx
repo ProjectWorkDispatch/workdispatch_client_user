@@ -198,11 +198,10 @@ export const MyRequestsPage = () => {
             <button
               key={tab.label}
               onClick={() => setStatusFilter(tab.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === tab.value
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === tab.value
                   ? "bg-yellow-500 text-gray-900"
                   : "bg-white border border-gray-200 text-gray-600 hover:border-yellow-400"
-              }`}
+                }`}
             >
               {tab.label}
               {tab.value && (
@@ -261,37 +260,39 @@ export const MyRequestsPage = () => {
                 onClick={() => setSelectedItem(item)}
               >
                 <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    {getItemImage(item) ? (
-                      <img
-                        src={getItemImage(item)}
-                        alt={getItemTitle(item)}
-                        className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <MagnifyingGlassIcon className="size-6 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-gray-900 truncate">
-                        {getItemTitle(item)}
-                      </h3>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
-                          {getItemCategory(item)}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {item._type === "service" ? "Servicio" : "Solicitud"}
-                        </span>
-                      </div>
-                      {item.createdAt && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          {formatRelativeDate(item.createdAt)}
-                        </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                      {getItemImage(item) ? (
+                        <img
+                          src={getItemImage(item)}
+                          alt={getItemTitle(item)}
+                          className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <MagnifyingGlassIcon className="size-6 text-gray-400" />
+                        </div>
                       )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold text-gray-900 truncate">
+                          {getItemTitle(item)}
+                        </h3>
+                        <div className="mt-1 flex items-center gap-2 flex-wrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                            {getItemCategory(item)}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {item._type === "service" ? "Servicio" : "Solicitud"}
+                          </span>
+                        </div>
+                        {item.createdAt && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {formatRelativeDate(item.createdAt)}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-3 flex-wrap sm:flex-shrink-0 sm:justify-end">
                       {item._type === "service" && item.workerId && item.status !== "CANCELLED" && (
                         <button
                           onClick={(e) => handleChat(e, item.workerId?._id || item.workerId)}
