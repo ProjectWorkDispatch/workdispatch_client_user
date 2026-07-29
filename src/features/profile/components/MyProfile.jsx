@@ -230,8 +230,8 @@ export const MyProfile = () => {
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-48 bg-gray-100 rounded-xl" />
-      <div className="h-64 bg-gray-100 rounded-xl" />
+      <div className="h-48 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+      <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-xl" />
     </div>
   );
 
@@ -241,8 +241,8 @@ export const MyProfile = () => {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div>
-        <h1 className="text-3xl font-black text-gray-900">Mi Perfil</h1>
-        <p className="text-gray-600 mt-1">Administra tu información personal</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Mi Perfil</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Administra tu información personal</p>
       </div>
 
       {/* Foto y datos básicos */}
@@ -283,8 +283,8 @@ export const MyProfile = () => {
               <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
             </div>
             <div>
-              <p className="font-bold text-gray-900">{form.firstName} {form.lastName}</p>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{form.firstName} {form.lastName}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
               <Badge variant={isWorker ? 'default' : 'secondary'} className="mt-1">
                 {isWorker ? 'Trabajador' : 'Cliente'}
               </Badge>
@@ -300,14 +300,14 @@ export const MyProfile = () => {
               { label: 'Dirección / Ubicación', key: 'address', placeholder: 'Ciudad, Zona, País' },
             ].map(({ label, key, placeholder, sanitize }) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{label}</label>
                 <input
                   type="text"
                   placeholder={placeholder}
                   value={form[key]}
                   disabled={!isEditing}
                   onChange={(e) => setForm({ ...form, [key]: sanitize ? sanitize(e.target.value) : e.target.value })}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:bg-gray-50 dark:disabled:bg-gray-950 disabled:text-gray-500 dark:disabled:text-gray-400"
                 />
               </div>
             ))}
@@ -315,21 +315,21 @@ export const MyProfile = () => {
 
           {isWorker && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio / Descripción profesional</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Bio / Descripción profesional</label>
               <textarea
                 placeholder="Describe tus habilidades, experiencia y lo que ofreces..."
                 value={form.description}
                 disabled={!isEditing}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none disabled:bg-gray-50 dark:disabled:bg-gray-950 disabled:text-gray-500 dark:disabled:text-gray-400"
               />
             </div>
           )}
 
           {isWorker && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Habilidades / Categorías</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Habilidades / Categorías</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {mySkills.map((s) => (
                   <Badge key={s._id} variant="secondary" className="text-xs">
@@ -337,7 +337,7 @@ export const MyProfile = () => {
                   </Badge>
                 ))}
                 {mySkills.length === 0 && (
-                  <p className="text-xs text-gray-400">Aún no agregaste habilidades</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Aún no agregaste habilidades</p>
                 )}
               </div>
               {isEditing && (
@@ -345,7 +345,7 @@ export const MyProfile = () => {
                   <select
                     value={selectedSkill}
                     onChange={(e) => setSelectedSkill(e.target.value)}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
                   >
                     <option value="">Selecciona una habilidad...</option>
                     {skillsCatalog.map((s) => (
@@ -359,7 +359,7 @@ export const MyProfile = () => {
                     value={experienceYears}
                     onChange={(e) => setExperienceYears(e.target.value)}
                     onKeyDown={blockInvalidNumberKeys}
-                    className="w-24 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="w-24 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
                   />
                   <Button size="sm" onClick={handleAddSkill}>Agregar</Button>
                 </div>
@@ -397,8 +397,8 @@ export const MyProfile = () => {
           </CardHeader>
           <CardContent>
             {portfolio.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <ArrowUpTrayIcon className="size-10 mx-auto mb-3 text-gray-300" />
+              <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+                <ArrowUpTrayIcon className="size-10 mx-auto mb-3 text-gray-300 dark:text-gray-400" />
                 <p className="text-sm">Aún no tienes trabajos en tu portafolio</p>
                 <Button size="sm" variant="outline" className="mt-3" onClick={openAddPortfolio}>
                   Agregar primer trabajo
@@ -410,7 +410,7 @@ export const MyProfile = () => {
                   <div
                     key={item._id}
                     className={`rounded-xl border overflow-hidden transition-all ${
-                      item.status === 'ACTIVE' ? 'border-gray-200' : 'border-gray-100 opacity-60'
+                      item.status === 'ACTIVE' ? 'border-gray-200 dark:border-gray-700' : 'border-gray-100 dark:border-gray-800 opacity-60'
                     }`}
                   >
                     {item.imageUrl && !item.imageUrl.includes('no disponible') && (
@@ -423,7 +423,7 @@ export const MyProfile = () => {
                     )}
                     <div className="p-3">
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <p className="text-sm text-gray-700 line-clamp-2 flex-1">{item.description}</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 flex-1">{item.description}</p>
                         <Badge variant={item.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-[10px] flex-shrink-0">
                           {item.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
                         </Badge>
@@ -466,19 +466,19 @@ export const MyProfile = () => {
         <div className="space-y-4">
           {!editingItem && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Foto del trabajo</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Foto del trabajo</label>
               <div
                 onClick={() => portfolioImageRef.current?.click()}
                 className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                  portfolioImagePreview ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200 hover:border-yellow-300'
+                  portfolioImagePreview ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30' : 'border-gray-200 dark:border-gray-700 hover:border-yellow-300'
                 }`}
               >
                 {portfolioImagePreview ? (
                   <img src={portfolioImagePreview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
                 ) : (
                   <div className="py-4">
-                    <ArrowUpTrayIcon className="size-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-xs text-gray-500">Click para subir una foto</p>
+                    <ArrowUpTrayIcon className="size-8 text-gray-300 dark:text-gray-400 mx-auto mb-2" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Click para subir una foto</p>
                   </div>
                 )}
                 <input
@@ -492,16 +492,16 @@ export const MyProfile = () => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Descripción del trabajo</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Descripción del trabajo</label>
             <textarea
               placeholder="Describe el trabajo realizado, materiales usados, resultado..."
               value={portfolioForm.description}
               onChange={(e) => setPortfolioForm({ ...portfolioForm, description: e.target.value })}
               rows={4}
               maxLength={500}
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
             />
-            <p className="text-xs text-gray-400 mt-1 text-right">{(portfolioForm.description || '').length}/500</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">{(portfolioForm.description || '').length}/500</p>
           </div>
         </div>
       </Modal>
@@ -521,8 +521,8 @@ export const MyProfile = () => {
               onClick={() => setReportsTab('received')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 reportsTab === 'received'
-                  ? 'bg-yellow-500 text-gray-900'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
+                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
               }`}
             >
               Recibidos ({receivedReports.length})
@@ -531,8 +531,8 @@ export const MyProfile = () => {
               onClick={() => setReportsTab('sent')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 reportsTab === 'sent'
-                  ? 'bg-yellow-500 text-gray-900'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
+                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
               }`}
             >
               Enviados ({sentReports.length})
@@ -541,21 +541,21 @@ export const MyProfile = () => {
 
           {reportsTab === 'received' && (
             receivedReports.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">No tienes reportes recibidos</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No tienes reportes recibidos</p>
             ) : (
               <div className="space-y-3">
                 {receivedReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-800">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                         De: {r.reporterId?.firstName || 'Usuario'}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         {new Date(r.createdAt).toLocaleDateString('es-GT')}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-gray-700">{r.Reason}</p>
-                    {r.Description && <p className="text-sm text-gray-500 mt-1">{r.Description}</p>}
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
+                    {r.Description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{r.Description}</p>}
                   </div>
                 ))}
               </div>
@@ -564,21 +564,21 @@ export const MyProfile = () => {
 
           {reportsTab === 'sent' && (
             sentReports.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">No has enviado reportes</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No has enviado reportes</p>
             ) : (
               <div className="space-y-3">
                 {sentReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-800">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                         Contra: {r.reporteredId?.firstName || 'Usuario'}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         {new Date(r.createdAt).toLocaleDateString('es-GT')}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-gray-700">{r.Reason}</p>
-                    {r.Description && <p className="text-sm text-gray-500 mt-1">{r.Description}</p>}
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
+                    {r.Description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{r.Description}</p>}
                   </div>
                 ))}
               </div>

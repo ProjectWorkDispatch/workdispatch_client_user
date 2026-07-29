@@ -41,18 +41,18 @@ export const CancelServiceModal = ({
         </div>
       }
     >
-      <p className="text-sm text-gray-600 mb-3">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
         Contale al cliente por qué vas a cancelar este servicio.
       </p>
       <textarea
-        className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+        className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
         rows={4}
         maxLength={300}
         placeholder="Ej: Tuve una emergencia y no puedo asistir..."
         value={reason}
         onChange={(e) => setReason(e.target.value)}
       />
-      <p className="text-xs text-gray-400 text-right mt-1">{reason.length}/300</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1">{reason.length}/300</p>
     </Modal>
   );
 };

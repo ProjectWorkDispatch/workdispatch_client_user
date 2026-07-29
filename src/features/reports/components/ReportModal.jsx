@@ -74,16 +74,16 @@ export const ReportModal = ({ open, onClose, reporteredId, reporteredName, onSuc
         >
             <div className="space-y-5">
                 <div>
-                    <p className="text-sm text-gray-500 mb-1">Estás reportando a</p>
-                    <p className="font-bold text-gray-900">{reporteredName || "Usuario"}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Estás reportando a</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">{reporteredName || "Usuario"}</p>
                 </div>
 
                 <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Motivo</label>
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 block">Motivo</label>
                     <select
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-700 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 outline-none text-sm text-gray-700 dark:text-gray-300 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
                     >
                         <option value="">Selecciona un motivo</option>
                         {REASONS.map((r) => (
@@ -93,13 +93,13 @@ export const ReportModal = ({ open, onClose, reporteredId, reporteredName, onSuc
                 </div>
 
                 <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Descripción</label>
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 block">Descripción</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={4}
                         placeholder="Describe con detalle lo sucedido..."
-                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-700 placeholder:text-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 resize-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 outline-none text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 resize-none"
                     />
                 </div>
             </div>

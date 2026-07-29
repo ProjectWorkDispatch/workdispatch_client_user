@@ -17,8 +17,8 @@ export const ReportsHome = () => {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl md:text-3xl font-black text-gray-900">Mis Reportes</h1>
-                <p className="text-gray-600 mt-1">Reportes que has enviado y su estado</p>
+                <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-gray-100">Mis Reportes</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">Reportes que has enviado y su estado</p>
             </div>
 
             {loading && (
@@ -28,7 +28,7 @@ export const ReportsHome = () => {
             )}
 
             {!loading && createdReports.length === 0 && (
-                <div className="py-16 text-center text-gray-400 flex flex-col items-center gap-2">
+                <div className="py-16 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
                     <FlagIcon className="size-10" />
                     No has enviado reportes
                 </div>
@@ -42,10 +42,10 @@ export const ReportsHome = () => {
                         <Card key={report._id}>
                             <CardContent className="p-5 flex items-start justify-between gap-3">
                                 <div>
-                                    <p className="text-xs text-gray-400 uppercase font-semibold">{report.Reason}</p>
-                                    <h3 className="font-bold text-gray-900">Reportado: {fullName}</h3>
-                                    <p className="text-sm text-gray-600 mt-2">{report.Description}</p>
-                                    <p className="text-xs text-gray-400 mt-2">
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-semibold">{report.Reason}</p>
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Reportado: {fullName}</h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{report.Description}</p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
                                         {new Date(report.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>

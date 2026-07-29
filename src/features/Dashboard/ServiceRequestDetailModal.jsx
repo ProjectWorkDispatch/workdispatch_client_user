@@ -21,7 +21,7 @@ import { PostServiceReviewFlow } from "../reviews/components/PostServiceReviewFl
 import { ReportModal } from "../reports/components/ReportModal";
 
 const StarRating = ({ rating }) => {
-  if (!rating) return <span className="text-sm text-gray-400">Sin calificación</span>;
+  if (!rating) return <span className="text-sm text-gray-400 dark:text-gray-500">Sin calificación</span>;
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -34,7 +34,7 @@ const StarRating = ({ rating }) => {
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
-      <span className="text-sm text-gray-600 ml-1">{rating.toFixed(1)}</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">{rating.toFixed(1)}</span>
     </div>
   );
 };
@@ -203,7 +203,7 @@ export const ServiceRequestDetailModal = ({
             )}
             {canReview && (
               hasReviewed ? (
-                <span className="text-sm text-gray-500">Ya dejaste una reseña</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Ya dejaste una reseña</span>
               ) : (
                 <Button onClick={() => setReviewFlowOpen(true)}>
                   Dejar reseña
@@ -224,19 +224,19 @@ export const ServiceRequestDetailModal = ({
     >
       {loading || (isServiceMode && proposalLoading) ? (
         <div className="py-12 text-center">
-          <p className="text-gray-500">Cargando...</p>
+          <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
         </div>
       ) : error ? (
         <div className="py-12 text-center">
-          <p className="text-gray-500 mb-2">{error}</p>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 mb-2">{error}</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm">
             Puede que la solicitud no exista o no tengas permiso para verla.
           </p>
         </div>
       ) : activeRequest ? (
         <div className="space-y-5">
           {activeRequest.serviceImage?.url && (
-            <div className="overflow-hidden rounded-lg border border-gray-200">
+            <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <img
                 src={activeRequest.serviceImage.url}
                 alt={activeRequest.title}
@@ -248,65 +248,65 @@ export const ServiceRequestDetailModal = ({
           <div>
             <div className="flex items-center gap-3 mb-2">
               {isServiceMode && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
                   Servicio
                 </span>
               )}
               <span
-                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[isServiceMode ? service?.status : activeRequest.status] || "bg-gray-100 text-gray-600"}`}
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[isServiceMode ? service?.status : activeRequest.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}
               >
                 <span className="size-1.5 rounded-full bg-current" />
                 {isServiceMode ? service?.status : activeRequest.status}
               </span>
               {activeRequest.categoryId?.name || activeRequest.customCategory ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium">
                   {activeRequest.categoryId?.name || activeRequest.customCategory}
                 </span>
               ) : null}
             </div>
-            <h3 className="text-xl font-black text-gray-900">{activeRequest.title}</h3>
-            <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+            <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">{activeRequest.title}</h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
               {activeRequest.description}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             {isServiceMode ? (
-              <div className="rounded-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Precio final</p>
-                <p className="text-sm font-bold text-gray-900">Q{service.finalPrice}</p>
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Precio final</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Q{service.finalPrice}</p>
               </div>
             ) : (
-              <div className="rounded-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Presupuesto</p>
-                <p className="text-sm font-bold text-gray-900">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Presupuesto</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                   Q{activeRequest.budgetMin} - Q{activeRequest.budgetMax}
                 </p>
               </div>
             )}
-            <div className="rounded-lg border border-gray-200 bg-white p-3">
-              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Dirección</p>
-              <p className="text-sm font-bold text-gray-900">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Dirección</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                 {activeRequest.address || "No especificada"}
               </p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-3">
-              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Creada</p>
-              <p className="text-sm font-bold text-gray-900">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Creada</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                 {formatRelativeDate(isServiceMode ? service?.createdAt : activeRequest.createdAt)}
               </p>
             </div>
             {isServiceMode && service.workerId && (
-              <div className="rounded-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Trabajador</p>
-                <p className="text-sm font-bold text-gray-900">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Trabajador</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                   {service.workerId.firstName} {service.workerId.lastName}
                 </p>
               </div>
             )}
             {activeRequest.latitude && activeRequest.longitude && (
-              <div className="col-span-2 rounded-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Ubicación</p>
+              <div className="col-span-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Ubicación</p>
                 <MapPicker
                   lat={activeRequest.latitude}
                   lng={activeRequest.longitude}
@@ -318,36 +318,36 @@ export const ServiceRequestDetailModal = ({
           </div>
 
           {isServiceMode && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <button
                 type="button"
                 onClick={() => setShowProposalContext(!showProposalContext)}
                 className="flex w-full items-center justify-between p-4 text-left"
               >
-                <span className="text-sm font-bold text-gray-900">Propuesta ganadora</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Propuesta ganadora</span>
                 {showProposalContext ? (
-                  <ChevronUpIcon className="size-5 text-gray-400" />
+                  <ChevronUpIcon className="size-5 text-gray-400 dark:text-gray-500" />
                 ) : (
-                  <ChevronDownIcon className="size-5 text-gray-400" />
+                  <ChevronDownIcon className="size-5 text-gray-400 dark:text-gray-500" />
                 )}
               </button>
               {showProposalContext && (
-                <div className="border-t border-gray-100 p-4 space-y-3">
+                <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-3">
                   {acceptedProposal ? (
                     <>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 uppercase tracking-wide">Precio ofertado</span>
-                        <span className="text-sm font-bold text-gray-900">Q{acceptedProposal.price}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Precio ofertado</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Q{acceptedProposal.price}</span>
                       </div>
                       {acceptedProposal.message && (
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Mensaje</span>
-                          <p className="mt-1 text-sm text-gray-600 italic">"{acceptedProposal.message}"</p>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Mensaje</span>
+                          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 italic">"{acceptedProposal.message}"</p>
                         </div>
                       )}
                     </>
                   ) : (
-                    <p className="text-sm text-gray-400">No se encontró la propuesta original.</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500">No se encontró la propuesta original.</p>
                   )}
                 </div>
               )}
@@ -355,33 +355,33 @@ export const ServiceRequestDetailModal = ({
           )}
 
           {isServiceMode && Array.isArray(service.workPlan) && service.workPlan.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <button
                 type="button"
                 onClick={() => setShowWorkPlan(!showWorkPlan)}
                 className="flex w-full items-center justify-between p-4 text-left"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-900">Plan de trabajo</span>
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                  <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Plan de trabajo</span>
+                  <span className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
                     {service.workPlan.filter((d) => d.status === "DONE").length}/{service.workPlan.length}
                   </span>
                 </div>
                 {showWorkPlan ? (
-                  <ChevronUpIcon className="size-5 text-gray-400" />
+                  <ChevronUpIcon className="size-5 text-gray-400 dark:text-gray-500" />
                 ) : (
-                  <ChevronDownIcon className="size-5 text-gray-400" />
+                  <ChevronDownIcon className="size-5 text-gray-400 dark:text-gray-500" />
                 )}
               </button>
               {showWorkPlan && (
-                <div className="border-t border-gray-100 p-4 space-y-2">
+                <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-2">
                   {service.scheduledDate && (
-                    <p className="text-xs text-gray-500 mb-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                       Cita: {new Date(service.scheduledDate).toLocaleDateString("es-GT", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                     </p>
                   )}
                   {service.workPlan.map((day) => (
-                    <div key={day.dayNumber} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                    <div key={day.dayNumber} className="flex items-start gap-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-3">
                       <CheckCircleIcon
                         className={`size-5 shrink-0 mt-0.5 ${
                           day.status === "DONE" ? "text-emerald-500" : "text-gray-300"
@@ -389,15 +389,15 @@ export const ServiceRequestDetailModal = ({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-gray-500 uppercase">Día {day.dayNumber}</span>
-                          <span className="text-[11px] text-gray-400">
+                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Día {day.dayNumber}</span>
+                          <span className="text-[11px] text-gray-400 dark:text-gray-500">
                             {new Date(day.date).toLocaleDateString("es-GT", { day: "2-digit", month: "short" })}
                           </span>
                           {day.status === "DONE" && (
-                            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Completado</span>
+                            <span className="rounded-full bg-emerald-100 dark:bg-green-900/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-green-400">Completado</span>
                           )}
                         </div>
-                        <p className="mt-1 text-sm text-gray-700">{day.description}</p>
+                        <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{day.description}</p>
                       </div>
                     </div>
                   ))}
@@ -407,21 +407,21 @@ export const ServiceRequestDetailModal = ({
           )}
 
           {!isServiceMode && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <h4 className="text-sm font-bold text-gray-900 mb-3">Ofertas recibidas</h4>
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+              <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">Ofertas recibidas</h4>
               {activeRequest.status !== "OPEN" && acceptedProposalInList ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-green-800 font-medium mb-2">Oferta aceptada</p>
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 rounded-lg p-4">
+                  <p className="text-green-800 dark:text-green-400 font-medium mb-2">Oferta aceptada</p>
                   <div className="space-y-2">
-                    <p className="text-gray-700">
+                    <p className="text-gray-700 dark:text-gray-300">
                       <span className="font-medium">
                         {acceptedProposalInList.workerId?.firstName} {acceptedProposalInList.workerId?.lastName}
                       </span>
                     </p>
                     <StarRating rating={acceptedProposalInList.workerId?.ratingAverage} />
-                    <p className="text-lg font-bold text-green-700">Q{acceptedProposalInList.price}</p>
+                    <p className="text-lg font-bold text-green-700 dark:text-green-400">Q{acceptedProposalInList.price}</p>
                     {acceptedProposalInList.message && (
-                      <p className="text-sm text-gray-600 italic">"{acceptedProposalInList.message}"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 italic">"{acceptedProposalInList.message}"</p>
                     )}
                     <Button
                       size="sm"
@@ -436,18 +436,18 @@ export const ServiceRequestDetailModal = ({
               ) : activeRequest.status === "OPEN" && pendingProposals.length > 0 ? (
                 <div className="space-y-3">
                   {pendingProposals.map((proposal) => (
-                    <div key={proposal._id} className="border border-gray-200 rounded-lg p-3">
+                    <div key={proposal._id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
                             {proposal.workerId?.firstName} {proposal.workerId?.lastName}
                           </p>
                           <StarRating rating={proposal.workerId?.ratingAverage} />
                         </div>
-                        <p className="text-lg font-bold text-gray-900">Q{proposal.price}</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-gray-100">Q{proposal.price}</p>
                       </div>
                       {proposal.message && (
-                        <p className="text-sm text-gray-600 italic mb-3">"{proposal.message}"</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 italic mb-3">"{proposal.message}"</p>
                       )}
                       <div className="flex gap-2">
                         <Button
@@ -478,7 +478,7 @@ export const ServiceRequestDetailModal = ({
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4 text-sm">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">
                   Todavía no has recibido ofertas para esta solicitud.
                 </p>
               )}
@@ -507,18 +507,18 @@ export const ServiceRequestDetailModal = ({
           </div>
         }
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
           Contale al trabajador por qué no vas a aceptar esta propuesta.
         </p>
         <textarea
-          className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
           rows={4}
           maxLength={300}
           placeholder="Ej: Encontré a alguien con mejor disponibilidad..."
           value={rejectReason}
           onChange={(e) => setRejectReason(e.target.value)}
         />
-        <p className="text-xs text-gray-400 text-right mt-1">{rejectReason.length}/300</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1">{rejectReason.length}/300</p>
       </Modal>
 
       {isServiceMode && (

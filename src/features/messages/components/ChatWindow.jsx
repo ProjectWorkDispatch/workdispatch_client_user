@@ -19,8 +19,8 @@ export const ChatWindow = ({
 
     if (!conversation) {
         return (
-            <div className="flex-1 bg-gray-50 flex flex-col items-center justify-center rounded-2xl border border-gray-200">
-                <p className="text-gray-400">Selecciona una conversación para empezar a chatear</p>
+            <div className="flex-1 bg-gray-50 flex flex-col items-center justify-center rounded-2xl border border-gray-200 dark:bg-gray-950 dark:border-gray-700">
+                <p className="text-gray-400 dark:text-gray-500">Selecciona una conversación para empezar a chatear</p>
             </div>
         );
     }
@@ -30,29 +30,29 @@ export const ChatWindow = ({
         : conversation.user1Id;
 
     return (
-        <div className="flex-1 flex flex-col bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden h-full">
+        <div className="flex-1 flex flex-col bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden h-full dark:bg-gray-950 dark:border-gray-700">
 
             {/* Header del Chat */}
-            <div className="bg-white px-4 py-3 border-b border-gray-200 flex items-center justify-between shadow-sm z-10">
+            <div className="bg-white px-4 py-3 border-b border-gray-200 flex items-center justify-between shadow-sm z-10 dark:bg-gray-800 dark:border-gray-700">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={onBack}
-                        className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition"
+                        className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition dark:text-gray-400 dark:hover:bg-gray-700"
                     >
                         <ArrowLeftIcon className="w-5 h-5" />
                     </button>
                     <div>
-                        <h2 className="font-semibold text-gray-900 capitalize">
+                        <h2 className="font-semibold text-gray-900 capitalize dark:text-gray-100">
                             {otherUser?.firstName} {otherUser?.lastName}
                         </h2>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                             Cliente
                         </p>
                     </div>
                 </div>
                 <button
                     onClick={() => onReport(otherUser)}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition"
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/30"
                     title="Reportar usuario"
                 >
                     <ExclamationTriangleIcon className="w-5 h-5" />
@@ -70,7 +70,7 @@ export const ChatWindow = ({
                         />
                     ))
                 ) : (
-                    <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                    <div className="h-full flex items-center justify-center text-gray-400 text-sm dark:text-gray-500">
                         No hay mensajes aún. ¡Escribe el primero!
                     </div>
                 )}

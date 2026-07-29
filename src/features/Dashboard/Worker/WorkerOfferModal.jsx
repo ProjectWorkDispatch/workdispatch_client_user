@@ -180,26 +180,26 @@ export const WorkerOfferModal = ({
   return (
     <Modal open={open} onClose={onClose} title="Hacer oferta" size="lg">
       <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <p className="text-sm font-bold text-gray-900">{job?.title || "Solicitud abierta"}</p>
-          <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 p-4">
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{job?.title || "Solicitud abierta"}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
             {job?.description || "El cliente aun no agrego una descripcion detallada."}
           </p>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-gray-600">
-            <span className="rounded-md bg-yellow-100 px-2 py-1 text-yellow-800">{getCategoryName(job)}</span>
-            <span className="rounded-md bg-white px-2 py-1">{formatMoney(job?.budgetMin)} - {formatMoney(job?.budgetMax)}</span>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
+            <span className="rounded-md bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 text-yellow-800 dark:text-yellow-400">{getCategoryName(job)}</span>
+            <span className="rounded-md bg-white dark:bg-gray-800 px-2 py-1">{formatMoney(job?.budgetMin)} - {formatMoney(job?.budgetMax)}</span>
           </div>
         </div>
 
         {hasExistingProposal && (
-          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm font-semibold text-yellow-800">
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/30 p-3 text-sm font-semibold text-yellow-800 dark:text-yellow-400">
             Ya enviaste una oferta para esta solicitud. Solo se permite una por trabajador.
           </div>
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-1.5">
-            <span className="text-sm font-bold text-gray-800">Monto a cobrar</span>
+            <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Monto a cobrar</span>
             <input
               type="number"
               min="1"
@@ -208,40 +208,40 @@ export const WorkerOfferModal = ({
               onChange={(event) => setPrice(event.target.value)}
               onKeyDown={blockInvalidNumberKeys}
               placeholder="Ej. 350"
-              className="h-11 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+              className="h-11 w-full rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
               disabled={hasExistingProposal || submitting}
             />
           </label>
 
           <label className="space-y-1.5">
-            <span className="text-sm font-bold text-gray-800">Tiempo estimado</span>
+            <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Tiempo estimado</span>
             <input
               type="text"
               value={estimatedTime}
               onChange={(event) => setEstimatedTime(event.target.value)}
               placeholder="Ej. 2 a 3 dias"
-              className="h-11 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+              className="h-11 w-full rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
               disabled={hasExistingProposal || submitting}
             />
           </label>
         </div>
 
         <label className="space-y-1.5">
-          <span className="text-sm font-bold text-gray-800">Mensaje para el cliente</span>
+          <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Mensaje para el cliente</span>
           <textarea
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             rows={5}
             maxLength={430}
             placeholder="Explica por que eres una buena opcion para este trabajo."
-            className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+            className="w-full resize-none rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
             disabled={hasExistingProposal || submitting}
           />
-          <span className="block text-right text-xs text-gray-400">{finalMessage.length || message.length}/500</span>
+          <span className="block text-right text-xs text-gray-400 dark:text-gray-500">{finalMessage.length || message.length}/500</span>
         </label>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-700 dark:text-red-400">
             {error}
           </div>
         )}

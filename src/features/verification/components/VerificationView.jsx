@@ -68,8 +68,8 @@ export const VerificationView = () => {
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-32 bg-gray-100 rounded-xl" />
-      <div className="h-64 bg-gray-100 rounded-xl" />
+      <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+      <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-xl" />
     </div>
   );
 
@@ -78,8 +78,8 @@ export const VerificationView = () => {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h1 className="text-3xl font-black text-gray-900">Verificación de Identidad</h1>
-        <p className="text-gray-600 mt-1">Sube tu documento para obtener la insignia de cuenta verificada</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Verificación de Identidad</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Sube tu documento para obtener la insignia de cuenta verificada</p>
       </div>
 
       {/* Estado actual */}
@@ -93,7 +93,7 @@ export const VerificationView = () => {
                   <p className={`font-bold ${status.color}`}>{status.label}</p>
                   <Badge variant={status.badge}>{verification.status}</Badge>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Tipo: <span className="font-medium">{verification.documentType}</span> —
                   N°: <span className="font-medium">{verification.documentNumber}</span>
                 </p>
@@ -123,11 +123,11 @@ export const VerificationView = () => {
           <CardContent className="space-y-4">
             {/* Tipo de documento */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de documento</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tipo de documento</label>
               <select
                 value={form.documentType}
                 onChange={(e) => setForm({ ...form, documentType: e.target.value })}
-                className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white dark:bg-gray-800 dark:text-gray-300"
               >
                 <option value="">Selecciona el tipo...</option>
                 <option value="DPI">DPI</option>
@@ -138,13 +138,13 @@ export const VerificationView = () => {
 
             {/* Número */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Número de documento</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Número de documento</label>
               <input
                 type="text"
                 placeholder="Ej: 2345 67890 1234"
                 value={form.documentNumber}
                 onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
-                className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
             </div>
 
@@ -155,11 +155,11 @@ export const VerificationView = () => {
                 { label: 'Reverso del documento', ref: backRef, file: backFile, setter: setBackFile },
               ].map(({ label, ref, file, setter }) => (
                 <div key={label}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{label}</label>
                   <div
                     onClick={() => ref.current?.click()}
                     className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                      file ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200 hover:border-yellow-300 hover:bg-yellow-50/50'
+                      file ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30' : 'border-gray-200 dark:border-gray-700 hover:border-yellow-300 hover:bg-yellow-50/50'
                     }`}
                   >
                     {file ? (
@@ -169,13 +169,13 @@ export const VerificationView = () => {
                           alt="Preview"
                           className="w-full h-24 object-cover rounded-md mb-2"
                         />
-                        <p className="text-xs text-yellow-700 font-medium truncate">{file.name}</p>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium truncate">{file.name}</p>
                       </div>
                     ) : (
                       <div className="py-2">
                         <ArrowUpTrayIcon className="size-8 text-gray-300 mx-auto mb-2" />
-                        <p className="text-xs text-gray-500">Click para subir imagen</p>
-                        <p className="text-xs text-gray-400">JPG, PNG hasta 5MB</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Click para subir imagen</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">JPG, PNG hasta 5MB</p>
                       </div>
                     )}
                     <input

@@ -29,9 +29,9 @@ const StarRating = ({ rating = 1, size = 'sm' }) => {
       {[1, 2, 3, 4, 5].map((v) =>
         v <= Math.round(rating)
           ? <StarSolid key={v} className={`${s} text-yellow-400`} />
-          : <StarIcon key={v} className={`${s} text-gray-300`} />
+          : <StarIcon key={v} className={`${s} text-gray-300 dark:text-gray-600`} />
       )}
-      <span className={`text-gray-500 ml-1 ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
+      <span className={`text-gray-500 dark:text-gray-400 ml-1 ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
         {Number(rating).toFixed(1)}
       </span>
     </div>
@@ -99,15 +99,15 @@ export const WorkerPublicProfile = () => {
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-48 bg-gray-100 rounded-xl" />
-      <div className="h-32 bg-gray-100 rounded-xl" />
+      <div className="h-48 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+      <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-xl" />
     </div>
   );
 
   if (!worker) return (
     <Card>
       <CardContent className="p-12 text-center">
-        <p className="text-gray-500">Trabajador no encontrado</p>
+        <p className="text-gray-500 dark:text-gray-400">Trabajador no encontrado</p>
         <Button variant="outline" className="mt-4" onClick={() => navigate(-1)}>Volver</Button>
       </CardContent>
     </Card>
@@ -120,7 +120,7 @@ export const WorkerPublicProfile = () => {
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 transition-colors"
       >
         <ArrowLeftIcon className="size-4" />
         Volver a resultados
@@ -152,7 +152,7 @@ export const WorkerPublicProfile = () => {
             <div className="flex-1">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h1 className="text-2xl font-black text-gray-900">
+                  <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100">
                     {worker.firstName} {worker.lastName}
                   </h1>
                   <StarRating rating={worker.ratingAverage} size="md" />
@@ -179,23 +179,23 @@ export const WorkerPublicProfile = () => {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-3 text-sm text-gray-600">
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-400">
                 {worker.phone && (
                   <span className="flex items-center gap-1">
-                    <PhoneIcon className="size-4 text-gray-400" />
+                    <PhoneIcon className="size-4 text-gray-400 dark:text-gray-500" />
                     {worker.phone}
                   </span>
                 )}
                 {worker.address && (
                   <span className="flex items-center gap-1">
-                    <MapPinIcon className="size-4 text-gray-400" />
+                    <MapPinIcon className="size-4 text-gray-400 dark:text-gray-500" />
                     {worker.address}
                   </span>
                 )}
               </div>
 
               {worker.description && (
-                <p className="mt-3 text-gray-600 text-sm leading-relaxed">{worker.description}</p>
+                <p className="mt-3 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{worker.description}</p>
               )}
 
               {worker.verificationStatus && (
@@ -212,37 +212,37 @@ export const WorkerPublicProfile = () => {
       {trustStats && (
         <div className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-center">
               <CheckBadgeIcon className="size-5 text-green-500 mx-auto mb-1" />
-              <p className="text-lg font-black text-gray-900">{trustStats.completedJobs}</p>
-              <p className="text-xs text-gray-500">Trabajos completados</p>
+              <p className="text-lg font-black text-gray-900 dark:text-gray-100">{trustStats.completedJobs}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Trabajos completados</p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-center">
               <ArrowPathIcon className="size-5 text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-black text-gray-900">
+              <p className="text-lg font-black text-gray-900 dark:text-gray-100">
                 {trustStats.completionRate != null ? `${Math.round(trustStats.completionRate * 100)}%` : "—"}
               </p>
-              <p className="text-xs text-gray-500">Tasa de finalización</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Tasa de finalización</p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-center">
               <ClockIcon className="size-5 text-purple-500 mx-auto mb-1" />
-              <p className="text-lg font-black text-gray-900">
+              <p className="text-lg font-black text-gray-900 dark:text-gray-100">
                 {trustStats.avgResponseTimeHours != null ? `${trustStats.avgResponseTimeHours}h` : "—"}
               </p>
-              <p className="text-xs text-gray-500">Tiempo prom. respuesta</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Tiempo prom. respuesta</p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 text-center">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-center">
               <CalendarDaysIcon className="size-5 text-yellow-500 mx-auto mb-1" />
-              <p className="text-lg font-black text-gray-900">
+              <p className="text-lg font-black text-gray-900 dark:text-gray-100">
                 {new Date(trustStats.memberSince).toLocaleDateString("es-GT", { month: "short", year: "numeric" })}
               </p>
-              <p className="text-xs text-gray-500">Miembro desde</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Miembro desde</p>
             </div>
           </div>
 
           {trustStats.repeatClientsCount > 0 && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <UserGroupIcon className="size-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <UserGroupIcon className="size-4 text-gray-400 dark:text-gray-500" />
               <span>{trustStats.repeatClientsCount} cliente(s) recurrente(s)</span>
             </div>
           )}
@@ -275,14 +275,14 @@ export const WorkerPublicProfile = () => {
             </CardHeader>
             <CardContent className="pt-0">
               {skills.length === 0 ? (
-                <p className="text-sm text-gray-400">Sin habilidades registradas</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">Sin habilidades registradas</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {skills.map((s) => (
                     <Badge key={s._id} variant="secondary">
                       {s.skillId?.name || 'Habilidad'}
                       {s.experienceYears > 0 && (
-                        <span className="ml-1 text-gray-400">{s.experienceYears}a</span>
+                        <span className="ml-1 text-gray-400 dark:text-gray-500">{s.experienceYears}a</span>
                       )}
                     </Badge>
                   ))}
@@ -305,11 +305,11 @@ export const WorkerPublicProfile = () => {
             </CardHeader>
             <CardContent className="pt-0">
               {portfolio.filter(p => p.status === 'ACTIVE').length === 0 ? (
-                <p className="text-sm text-gray-400">Sin trabajos en el portafolio</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">Sin trabajos en el portafolio</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {portfolio.filter(p => p.status === 'ACTIVE').map((item) => (
-                    <div key={item._id} className="rounded-lg overflow-hidden border border-gray-100 hover:border-yellow-200 transition-colors">
+                    <div key={item._id} className="rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-yellow-200 transition-colors">
                       {item.imageUrl && !item.imageUrl.includes('no disponible') && (
                         <img
                           src={item.imageUrl}
@@ -319,7 +319,7 @@ export const WorkerPublicProfile = () => {
                         />
                       )}
                       <div className="p-3">
-                        <p className="text-sm text-gray-700 line-clamp-3">{item.description}</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -338,18 +338,18 @@ export const WorkerPublicProfile = () => {
             </CardHeader>
             <CardContent className="pt-0">
               {reviews.length === 0 ? (
-                <p className="text-sm text-gray-400">Sin reseñas aún</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">Sin reseñas aún</p>
               ) : (
                 <div className="space-y-3">
                   {reviews.map((r) => (
-                    <div key={r._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-semibold text-gray-800">
+                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                           {r.clientId?.firstName || 'Cliente'}
                         </span>
                         <StarRating rating={r.rating} />
                       </div>
-                      {r.comment && <p className="text-sm text-gray-600">{r.comment}</p>}
+                      {r.comment && <p className="text-sm text-gray-600 dark:text-gray-400">{r.comment}</p>}
                     </div>
                   ))}
                 </div>

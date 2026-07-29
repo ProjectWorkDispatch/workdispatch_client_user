@@ -15,10 +15,10 @@ import { ServiceRequestDetailModal } from "./ServiceRequestDetailModal";
 import { getMyServiceRequests, getCategories } from "../../shared/api/user";
 
 const STATUS_BADGE = {
-  OPEN: "bg-yellow-100 text-yellow-800",
-  IN_PROGRESS: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-gray-100 text-gray-600",
+  OPEN: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400",
+  IN_PROGRESS: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400",
+  COMPLETED: "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400",
+  CANCELLED: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400",
 };
 
 export const ClientDashboardSummary = () => {
@@ -51,9 +51,9 @@ export const ClientDashboardSummary = () => {
   const completedCount = requests.filter((r) => r.status === "COMPLETED").length;
 
   const stats = [
-    { label: "Solicitudes Activas", value: activeCount, icon: ClockIcon, bg: "bg-yellow-50", border: "border-yellow-200", color: "text-yellow-600" },
-    { label: "En Progreso", value: inProgressCount, icon: CheckCircleIcon, bg: "bg-gray-100", border: "border-gray-300", color: "text-gray-700" },
-    { label: "Completados", value: completedCount, icon: CheckCircleIcon, bg: "bg-gray-200", border: "border-gray-400", color: "text-gray-900" },
+    { label: "Solicitudes Activas", value: activeCount, icon: ClockIcon, bg: "bg-yellow-50 dark:bg-yellow-900/30", border: "border-yellow-200 dark:border-yellow-800", color: "text-yellow-600 dark:text-yellow-400" },
+    { label: "En Progreso", value: inProgressCount, icon: CheckCircleIcon, bg: "bg-gray-100 dark:bg-gray-700", border: "border-gray-300 dark:border-gray-600", color: "text-gray-700 dark:text-gray-300" },
+    { label: "Completados", value: completedCount, icon: CheckCircleIcon, bg: "bg-gray-200 dark:bg-gray-600", border: "border-gray-400 dark:border-gray-500", color: "text-gray-900 dark:text-gray-100" },
   ];
 
   const recentRequests = requests.slice(0, 3);
@@ -62,8 +62,8 @@ export const ClientDashboardSummary = () => {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Panel de Cliente</h1>
-          <p className="text-gray-600 mt-1">Gestiona tus solicitudes de trabajo</p>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Panel de Cliente</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona tus solicitudes de trabajo</p>
         </div>
 
         <Button size="lg" onClick={() => setOpenModal(true)}>
@@ -77,15 +77,15 @@ export const ClientDashboardSummary = () => {
       {loading ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <p className="text-gray-500 text-lg">Cargando solicitudes...</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Cargando solicitudes...</p>
           </CardContent>
         </Card>
       ) : requests.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <MapPinIcon className="size-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg mb-2">Aun no has creado ninguna solicitud</p>
-            <p className="text-gray-400 text-sm">
+            <MapPinIcon className="size-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">Aun no has creado ninguna solicitud</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
               Esta seccion la completa cada feature de solicitudes del cliente.
             </p>
           </CardContent>
@@ -102,14 +102,14 @@ export const ClientDashboardSummary = () => {
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-bold text-gray-900">{req.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{req.categoryId?.name || req.customCategory || "Sin categoría"}</p>
+                      <h3 className="font-bold text-gray-900 dark:text-gray-100">{req.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{req.categoryId?.name || req.customCategory || "Sin categoría"}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[req.status] || "bg-gray-100 text-gray-600"}`}>
+                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[req.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
                         {req.status}
                       </span>
-                      <span className="text-sm font-semibold text-gray-700">
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         Q{req.budgetMin} - Q{req.budgetMax}
                       </span>
                     </div>

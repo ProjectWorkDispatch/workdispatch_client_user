@@ -7,11 +7,11 @@ const VARIANTS = {
     "bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-400 hover:to-yellow-300 text-gray-900 shadow-md",
   // Botones secundarios sobre fondo blanco — "Ver Detalles", "Ver Todas"
   outline:
-    "border border-gray-300 bg-white text-gray-700 hover:border-yellow-400 hover:bg-yellow-50",
+    "border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-yellow-400 hover:bg-yellow-50",
   // Sobre header oscuro — nav items inactivos, iconos de logout, etc.
   ghostDark: "bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50",
   // Sobre fondo claro — cancelar en modales
-  ghost: "bg-transparent text-gray-600 hover:bg-gray-100",
+  ghost: "bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700",
   // Acciones destructivas
   destructive: "bg-red-600 text-white hover:bg-red-700",
 };

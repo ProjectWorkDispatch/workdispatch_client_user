@@ -95,13 +95,13 @@ const getStatusLabel = (status) => {
 
 const statusClass = (status) => {
   const styles = {
-    PENDING: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    PENDING: "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200",
     IN_PROGRESS: "bg-sky-50 text-sky-700 border-sky-200",
-    COMPLETED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    CANCELLED: "bg-red-50 text-red-700 border-red-200",
+    COMPLETED: "bg-emerald-50 dark:bg-green-900/30 text-emerald-700 dark:text-green-400 border-emerald-200",
+    CANCELLED: "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200",
   };
 
-  return styles[status] || "bg-gray-100 text-gray-600 border-gray-200";
+  return styles[status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700";
 };
 
 const getImageUrl = (service) => {
@@ -188,8 +188,8 @@ export const WorkerServicesPage = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-black text-gray-900">Mis Servicios</h1>
-        <p className="mt-1 text-gray-600">Revisa tus trabajos activos, finalizados y cancelados.</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Mis Servicios</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">Revisa tus trabajos activos, finalizados y cancelados.</p>
       </div>
 
       {error && (
@@ -202,8 +202,8 @@ export const WorkerServicesPage = () => {
       <Card>
         <CardContent className="p-6">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm font-bold text-gray-700">
-              <FunnelIcon className="size-5 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+              <FunnelIcon className="size-5 text-gray-400 dark:text-gray-500" />
               Filtrar por estado
             </div>
             <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export const WorkerServicesPage = () => {
                     className={`rounded-lg border px-3 py-2 text-sm font-bold transition ${
                       active
                         ? "border-yellow-400 bg-yellow-400 text-gray-900"
-                        : "border-gray-200 bg-white text-gray-600 hover:border-yellow-300 hover:bg-yellow-50"
+                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-yellow-300 hover:bg-yellow-50"
                     }`}
                   >
                     {filter.label} ({counts[filter.value] || 0})
@@ -228,7 +228,7 @@ export const WorkerServicesPage = () => {
           </div>
 
           {loading ? (
-            <p className="py-10 text-center text-sm font-semibold text-gray-500">Cargando servicios...</p>
+            <p className="py-10 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Cargando servicios...</p>
           ) : filteredServices.length ? (
             <div className="grid gap-4 lg:grid-cols-2">
               {filteredServices.map((service) => {
@@ -239,10 +239,10 @@ export const WorkerServicesPage = () => {
                 const alreadyReviewed = reviewedServiceIds.has(serviceId);
 
                 return (
-                  <article key={serviceId} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                  <article key={serviceId} className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div className="flex min-h-full flex-col">
                       <div className="flex gap-4 p-4">
-                        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
                           {imageUrl ? (
                             <img
                               src={imageUrl}
@@ -250,7 +250,7 @@ export const WorkerServicesPage = () => {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-gray-400">
+                            <div className="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-500">
                               <BriefcaseIcon className="size-8" />
                             </div>
                           )}
@@ -261,42 +261,42 @@ export const WorkerServicesPage = () => {
                             <span className={`rounded-md border px-2 py-0.5 text-xs font-bold ${statusClass(service?.status)}`}>
                               {getStatusLabel(service?.status)}
                             </span>
-                            <span className="rounded-md bg-yellow-50 px-2 py-0.5 text-xs font-bold text-yellow-700">
+                            <span className="rounded-md bg-yellow-50 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-bold text-yellow-700 dark:text-yellow-400">
                               {getCategoryName(service)}
                             </span>
                           </div>
-                          <h2 className="truncate text-base font-black text-gray-900">
+                          <h2 className="truncate text-base font-black text-gray-900 dark:text-gray-100">
                             {request?.title || service?.serviceCode || "Servicio asignado"}
                           </h2>
-                          <p className="mt-1 line-clamp-2 text-sm leading-5 text-gray-500">
+                          <p className="mt-1 line-clamp-2 text-sm leading-5 text-gray-500 dark:text-gray-400">
                             {request?.description || "Sin descripcion disponible."}
                           </p>
                         </div>
                       </div>
 
-                      <div className="grid gap-2 border-t border-gray-100 px-4 py-3 text-sm sm:grid-cols-2">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <UserCircleIcon className="size-4 text-gray-400" />
+                      <div className="grid gap-2 border-t border-gray-100 dark:border-gray-800 px-4 py-3 text-sm sm:grid-cols-2">
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <UserCircleIcon className="size-4 text-gray-400 dark:text-gray-500" />
                           <span className="truncate">{getClientName(service)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <MapPinIcon className="size-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <MapPinIcon className="size-4 text-gray-400 dark:text-gray-500" />
                           <span className="truncate">{request?.address || "Ubicacion por confirmar"}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <CalendarDaysIcon className="size-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <CalendarDaysIcon className="size-4 text-gray-400 dark:text-gray-500" />
                           <span>Inicio: {formatDate(service?.startDate || service?.createdAt)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <CheckCircleIcon className="size-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <CheckCircleIcon className="size-4 text-gray-400 dark:text-gray-500" />
                           <span>Fin: {formatDate(service?.endDate)}</span>
                         </div>
                       </div>
 
-                      <div className="mt-auto flex flex-col gap-3 border-t border-gray-100 bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="mt-auto flex flex-col gap-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <p className="text-xs font-bold uppercase text-gray-400">Precio final</p>
-                          <p className="text-lg font-black text-gray-900">{formatMoney(service?.finalPrice)}</p>
+                          <p className="text-xs font-bold uppercase text-gray-400 dark:text-gray-500">Precio final</p>
+                          <p className="text-lg font-black text-gray-900 dark:text-gray-100">{formatMoney(service?.finalPrice)}</p>
                         </div>
 
                         {isCompleted ? (
@@ -311,7 +311,7 @@ export const WorkerServicesPage = () => {
                             </Button>
                           )
                         ) : (
-                          <span className="text-sm font-semibold text-gray-400">
+                            <span className="text-sm font-semibold text-gray-400 dark:text-gray-500">
                             {service?.status === "IN_PROGRESS" ? "Trabajo en seguimiento" : "Sin accion disponible"}
                           </span>
                         )}
@@ -323,9 +323,9 @@ export const WorkerServicesPage = () => {
             </div>
           ) : (
             <div className="py-12 text-center">
-              <BriefcaseIcon className="mx-auto mb-4 size-12 text-gray-400" />
-              <p className="text-lg font-bold text-gray-500">No hay servicios en este filtro</p>
-              <p className="mt-1 text-sm text-gray-400">Cuando acepten una oferta, el servicio aparecera aqui.</p>
+              <BriefcaseIcon className="mx-auto mb-4 size-12 text-gray-400 dark:text-gray-500" />
+              <p className="text-lg font-bold text-gray-500 dark:text-gray-400">No hay servicios en este filtro</p>
+              <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">Cuando acepten una oferta, el servicio aparecera aqui.</p>
             </div>
           )}
         </CardContent>

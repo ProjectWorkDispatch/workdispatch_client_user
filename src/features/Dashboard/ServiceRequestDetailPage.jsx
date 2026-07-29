@@ -18,7 +18,7 @@ import { useMessagesStore } from "../../shared/store/userStore.js";
 import { useRequireVerification } from "../verification/hooks/useRequireVerification";
 
 const StarRating = ({ rating }) => {
-  if (!rating) return <span className="text-sm text-gray-400">Sin calificación</span>;
+  if (!rating) return <span className="text-sm text-gray-400 dark:text-gray-500">Sin calificación</span>;
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -31,7 +31,7 @@ const StarRating = ({ rating }) => {
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
-      <span className="text-sm text-gray-600 ml-1">{rating.toFixed(1)}</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">{rating.toFixed(1)}</span>
     </div>
   );
 };
@@ -129,7 +129,7 @@ export const ServiceRequestDetailPage = () => {
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <p className="text-gray-500 text-lg">Cargando solicitud...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">Cargando solicitud...</p>
         </CardContent>
       </Card>
     );
@@ -144,8 +144,8 @@ export const ServiceRequestDetailPage = () => {
         </Button>
         <Card>
           <CardContent className="p-12 text-center">
-            <p className="text-gray-500 text-lg mb-2">{error}</p>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{error}</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">
               Puede que la solicitud no exista o no tengas permiso para verla.
             </p>
             <Button onClick={() => navigate("/dashboard/my-requests")}>
@@ -170,14 +170,14 @@ export const ServiceRequestDetailPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">{serviceRequest.title}</h1>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">{serviceRequest.title}</h1>
           <div className="flex items-center gap-3 mt-2">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[serviceRequest.status] || "bg-gray-100 text-gray-600"}`}>
+            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[serviceRequest.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
               <span className="size-1.5 rounded-full bg-current" />
               {serviceRequest.status}
             </span>
             {serviceRequest.categoryId?.name || serviceRequest.customCategory ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium">
                 {serviceRequest.categoryId?.name || serviceRequest.customCategory}
               </span>
             ) : null}
@@ -203,8 +203,8 @@ export const ServiceRequestDetailPage = () => {
           {/* Descripción */}
           <Card>
             <CardContent className="p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Descripción</h2>
-              <p className="text-gray-600 leading-relaxed">{serviceRequest.description}</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Descripción</h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{serviceRequest.description}</p>
             </CardContent>
           </Card>
 
@@ -212,7 +212,7 @@ export const ServiceRequestDetailPage = () => {
           {serviceRequest.latitude && serviceRequest.longitude && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-3">Ubicación</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Ubicación</h2>
                 <MapPicker
                   lat={serviceRequest.latitude}
                   lng={serviceRequest.longitude}
@@ -230,18 +230,18 @@ export const ServiceRequestDetailPage = () => {
           <Card>
             <CardContent className="p-6 space-y-4">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Presupuesto</p>
-                <p className="text-lg font-bold text-gray-900">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Presupuesto</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                   Q{serviceRequest.budgetMin} - Q{serviceRequest.budgetMax}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Dirección</p>
-                <p className="text-gray-700">{serviceRequest.address || "No especificada"}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Dirección</p>
+                <p className="text-gray-700 dark:text-gray-300">{serviceRequest.address || "No especificada"}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Creada</p>
-                <p className="text-gray-700">{formatRelativeDate(serviceRequest.createdAt)}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Creada</p>
+                <p className="text-gray-700 dark:text-gray-300">{formatRelativeDate(serviceRequest.createdAt)}</p>
               </div>
             </CardContent>
           </Card>
@@ -249,18 +249,18 @@ export const ServiceRequestDetailPage = () => {
           {/* Ofertas recibidas */}
           <Card>
             <CardContent className="p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Ofertas recibidas</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Ofertas recibidas</h2>
               {serviceRequest.status !== "OPEN" && acceptedProposal ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-green-800 font-medium mb-2">Oferta aceptada</p>
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 rounded-lg p-4">
+                  <p className="text-green-800 dark:text-green-400 font-medium mb-2">Oferta aceptada</p>
                   <div className="space-y-2">
-                    <p className="text-gray-700">
+                    <p className="text-gray-700 dark:text-gray-300">
                       <span className="font-medium">{acceptedProposal.workerId?.firstName} {acceptedProposal.workerId?.lastName}</span>
                     </p>
                     <StarRating rating={acceptedProposal.workerId?.ratingAverage} />
-                    <p className="text-lg font-bold text-green-700">Q{acceptedProposal.price}</p>
+                    <p className="text-lg font-bold text-green-700 dark:text-green-400">Q{acceptedProposal.price}</p>
                     {acceptedProposal.message && (
-                      <p className="text-sm text-gray-600 italic">"{acceptedProposal.message}"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 italic">"{acceptedProposal.message}"</p>
                     )}
                     <Button
                       size="sm"
@@ -275,18 +275,18 @@ export const ServiceRequestDetailPage = () => {
               ) : serviceRequest.status === "OPEN" && pendingProposals.length > 0 ? (
                 <div className="space-y-4">
                   {pendingProposals.map((proposal) => (
-                    <div key={proposal._id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={proposal._id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
                             {proposal.workerId?.firstName} {proposal.workerId?.lastName}
                           </p>
                           <StarRating rating={proposal.workerId?.ratingAverage} />
                         </div>
-                        <p className="text-lg font-bold text-gray-900">Q{proposal.price}</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-gray-100">Q{proposal.price}</p>
                       </div>
                       {proposal.message && (
-                        <p className="text-sm text-gray-600 italic mb-3">"{proposal.message}"</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 italic mb-3">"{proposal.message}"</p>
                       )}
                       <div className="flex gap-2">
                         <Button
@@ -309,7 +309,7 @@ export const ServiceRequestDetailPage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">
                   Todavía no has recibido ofertas para esta solicitud.
                 </p>
               )}
@@ -338,18 +338,18 @@ export const ServiceRequestDetailPage = () => {
           </div>
         }
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
           Contale al trabajador por qué no vas a aceptar esta propuesta.
         </p>
         <textarea
-          className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
           rows={4}
           maxLength={300}
           placeholder="Ej: Encontré a alguien con mejor disponibilidad..."
           value={rejectReason}
           onChange={(e) => setRejectReason(e.target.value)}
         />
-        <p className="text-xs text-gray-400 text-right mt-1">{rejectReason.length}/300</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1">{rejectReason.length}/300</p>
       </Modal>
     </div>
   );

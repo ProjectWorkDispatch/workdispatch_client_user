@@ -61,13 +61,13 @@ const getStatusLabel = (status) => {
 
 const statusClass = (status) => {
   const styles = {
-    PENDING: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    ACCEPTED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    REJECTED: "bg-red-50 text-red-700 border-red-200",
-    CANCELLED: "bg-gray-100 text-gray-600 border-gray-200",
+    PENDING: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700",
+    ACCEPTED: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700",
+    REJECTED: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
+    CANCELLED: "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-700",
   };
 
-  return styles[status] || "bg-gray-100 text-gray-600 border-gray-200";
+  return styles[status] || "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-700";
 };
 
 const getRequestTitle = (proposal) => {
@@ -147,12 +147,12 @@ export const WorkerOffersPage = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-black text-gray-900">Mis Ofertas</h1>
-        <p className="mt-1 text-gray-600">Revisa las propuestas que has enviado y su estado actual.</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Mis Ofertas</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">Revisa las propuestas que has enviado y su estado actual.</p>
       </div>
 
       {error && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="flex items-start gap-3 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 p-4 text-sm text-red-700 dark:text-red-400">
           <ExclamationTriangleIcon className="mt-0.5 size-5 shrink-0" />
           <p>{error}</p>
         </div>
@@ -161,8 +161,8 @@ export const WorkerOffersPage = () => {
       <Card>
         <CardContent className="p-6">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm font-bold text-gray-700">
-              <FunnelIcon className="size-5 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+              <FunnelIcon className="size-5 text-gray-400 dark:text-gray-500" />
               Filtrar por estado
             </div>
             <div className="flex flex-wrap gap-2">
@@ -176,7 +176,7 @@ export const WorkerOffersPage = () => {
                     className={`rounded-lg border px-3 py-2 text-sm font-bold transition ${
                       active
                         ? "border-yellow-400 bg-yellow-400 text-gray-900"
-                        : "border-gray-200 bg-white text-gray-600 hover:border-yellow-300 hover:bg-yellow-50"
+                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-yellow-300 hover:bg-yellow-50"
                     }`}
                   >
                     {filter.label} ({counts[filter.value] || 0})
@@ -187,7 +187,7 @@ export const WorkerOffersPage = () => {
           </div>
 
           {loading ? (
-            <p className="py-10 text-center text-sm font-semibold text-gray-500">Cargando ofertas...</p>
+            <p className="py-10 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Cargando ofertas...</p>
           ) : filteredProposals.length ? (
             <div className="space-y-3">
               {filteredProposals.map((proposal) => (
@@ -195,7 +195,7 @@ export const WorkerOffersPage = () => {
                   key={proposal._id || proposal.id}
                   type="button"
                   onClick={() => setSelectedRequest(proposal?.serviceRequestId || null)}
-                  className="w-full rounded-lg border border-gray-200 bg-white p-4 text-left transition hover:border-yellow-300 hover:bg-yellow-50/40"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-left transition hover:border-yellow-300 hover:bg-yellow-50/40"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
@@ -203,17 +203,17 @@ export const WorkerOffersPage = () => {
                         <span className={`inline-flex rounded-md border px-2 py-0.5 text-xs font-bold ${statusClass(proposal?.status)}`}>
                           {getStatusLabel(proposal?.status)}
                         </span>
-                        <span className="text-xs font-semibold text-gray-400">{formatDate(proposal?.createdAt)}</span>
+                        <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">{formatDate(proposal?.createdAt)}</span>
                       </div>
                       {proposal?.status === "REJECTED" && proposal?.rejectionReason && (
-                        <p className="text-xs text-gray-500 italic mt-1">Motivo: {proposal.rejectionReason}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 italic mt-1">Motivo: {proposal.rejectionReason}</p>
                       )}
-                      <h2 className="truncate text-base font-black text-gray-900">{getRequestTitle(proposal)}</h2>
-                      <p className="mt-1 line-clamp-2 text-sm text-gray-500">{getRequestDescription(proposal)}</p>
+                      <h2 className="truncate text-base font-black text-gray-900 dark:text-gray-100">{getRequestTitle(proposal)}</h2>
+                      <p className="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">{getRequestDescription(proposal)}</p>
                     </div>
                     <div className="shrink-0 text-left sm:text-right">
-                      <p className="text-sm font-black text-gray-900">{formatMoney(proposal?.price)}</p>
-                      <p className="mt-1 text-xs font-semibold text-gray-400">Ver detalle</p>
+                      <p className="text-sm font-black text-gray-900 dark:text-gray-100">{formatMoney(proposal?.price)}</p>
+                      <p className="mt-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Ver detalle</p>
                     </div>
                   </div>
                 </button>
@@ -221,9 +221,9 @@ export const WorkerOffersPage = () => {
             </div>
           ) : (
             <div className="py-12 text-center">
-              <ClipboardDocumentListIcon className="mx-auto mb-4 size-12 text-gray-400" />
-              <p className="text-lg font-bold text-gray-500">No hay ofertas en este filtro</p>
-              <p className="mt-1 text-sm text-gray-400">Cuando envies propuestas apareceran aqui.</p>
+              <ClipboardDocumentListIcon className="mx-auto mb-4 size-12 text-gray-400 dark:text-gray-500" />
+              <p className="text-lg font-bold text-gray-500 dark:text-gray-400">No hay ofertas en este filtro</p>
+              <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">Cuando envies propuestas apareceran aqui.</p>
             </div>
           )}
         </CardContent>

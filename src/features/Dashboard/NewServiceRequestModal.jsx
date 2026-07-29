@@ -176,44 +176,44 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
       <form id="new-service-request-form" onSubmit={handleSubmit} className="space-y-4">
         {/* Título */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
           <input
             type="text"
             name="title"
             value={form.title}
             onChange={handleChange}
             placeholder="Ej: Reparación de plomería"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
           />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
         </div>
 
         {/* Descripción */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción *</label>
           <textarea
             name="description"
             value={form.description}
             onChange={handleChange}
             rows={3}
             placeholder="Describe el trabajo que necesitás..."
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none resize-none"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none resize-none"
           />
           {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
         </div>
 
         {/* Categoría */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría *</label>
           {categoriesLoading ? (
-            <p className="text-gray-500 text-sm">Cargando categorías...</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Cargando categorías...</p>
           ) : (
             <>
               <select
                 name="categoryId"
                 value={form.categoryId}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
               >
                 <option value="">Seleccionar categoría</option>
                 {categories.map((cat) => (
@@ -229,7 +229,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
                   onChange={(e) => setForm((prev) => ({ ...prev, customCategory: sanitizeLettersOnly(e.target.value) }))}
                   placeholder="Escribí tu categoría personalizada"
                   maxLength={100}
-                  className="w-full mt-2 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+                  className="w-full mt-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
                 />
               )}
             </>
@@ -239,21 +239,21 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
 
         {/* Dirección */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección *</label>
           <input
             type="text"
             name="address"
             value={form.address}
             onChange={handleChange}
             placeholder="Dirección del lugar"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
           />
           {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
         </div>
 
         {/* Mapa */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación en el mapa *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ubicación en el mapa *</label>
           <MapPicker
             lat={form.latitude || null}
             lng={form.longitude || null}
@@ -268,7 +268,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
         {/* Presupuesto */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Presupuesto Mín. (Q) *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Presupuesto Mín. (Q) *</label>
             <input
               type="number"
               name="budgetMin"
@@ -278,12 +278,12 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
               min="0"
               step="any"
               placeholder="0"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
             />
             {errors.budgetMin && <p className="text-red-500 text-xs mt-1">{errors.budgetMin}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Presupuesto Máx. (Q) *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Presupuesto Máx. (Q) *</label>
             <input
               type="number"
               name="budgetMax"
@@ -293,7 +293,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
               min="0"
               step="any"
               placeholder="0"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none"
             />
             {errors.budgetMax && <p className="text-red-500 text-xs mt-1">{errors.budgetMax}</p>}
           </div>
@@ -301,28 +301,28 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
 
         {/* Imagen */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Foto (opcional)</label>
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-            <div className="w-20 h-20 rounded-xl bg-white border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto (opcional)</label>
+          <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-950 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden shrink-0">
               {imagePreview ? (
                 <img src={imagePreview} alt="Vista previa" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-gray-400 text-[10px] font-medium text-center px-1">Sin imagen</span>
+                <span className="text-gray-400 dark:text-gray-500 text-[10px] font-medium text-center px-1">Sin imagen</span>
               )}
             </div>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 cursor-pointer"
+              className="text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 dark:file:bg-yellow-900/30 file:text-yellow-700 dark:text-yellow-400 dark:file:text-yellow-400 hover:file:bg-yellow-100 cursor-pointer"
             />
           </div>
         </div>
 
         {/* IA Estimate */}
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/30 p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-yellow-700">Estimado con IA</span>
+            <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Estimado con IA</span>
             <Button
               variant="outline"
               size="sm"
@@ -333,7 +333,7 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
               Generar estimado con IA
             </Button>
           </div>
-          <p className="text-xs text-yellow-600">Obtené un estimado automático del costo según la categoría y descripción.</p>
+          <p className="text-xs text-yellow-600 dark:text-yellow-400">Obtené un estimado automático del costo según la categoría y descripción.</p>
         </div>
       </form>
     </Modal>

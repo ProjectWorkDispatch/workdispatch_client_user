@@ -13,11 +13,14 @@ import {
   ChatBubbleLeftRightIcon,
   BellIcon,
   StarIcon,
+  SunIcon,
+  MoonIcon,
 } from "@heroicons/react/24/outline";
 import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 import { useAuthStore } from "../../../features/auth/store/authStore";
 import { useNotificationsStore } from "../../store/userStore.js";
 import { Button } from "../ui/Button";
+import { useColorMode } from "../../hooks/useColorMode";
 
 /* ------------------------------------------------------------------ */
 /* Navegación por rol — cada quien agrega su ruta aquí cuando la cree  */
@@ -69,6 +72,7 @@ const DashboardHeader = () => {
     navigate("/");
   };
 
+  const { mode, toggleColorMode } = useColorMode();
   const initials = `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase();
 
   return (
@@ -126,6 +130,10 @@ const DashboardHeader = () => {
                 </span>
               )}
             </Link>
+
+            <Button variant="ghostDark" size="icon" className="rounded-full" onClick={toggleColorMode} title={mode === "dark" ? "Modo claro" : "Modo oscuro"}>
+              {mode === "dark" ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />}
+            </Button>
 
             <div className="hidden xl:flex items-center bg-gray-700/50 border border-yellow-500/30 px-3 py-1.5 rounded-full text-sm font-medium text-yellow-400">
               {user?.role === "CLIENT" ? "Cliente" : "Trabajador"}
@@ -190,7 +198,7 @@ const DashboardHeader = () => {
 /* (mismas clases que ui/card.tsx y ui/badge.tsx del Figma)            */
 /* ------------------------------------------------------------------ */
 export const Card = ({ className = "", children, ...props }) => (
-  <div className={`bg-white flex flex-col gap-6 rounded-xl border border-gray-200 ${className}`} {...props}>
+  <div className={`bg-white dark:bg-gray-800 flex flex-col gap-6 rounded-xl border border-gray-200 dark:border-gray-700 ${className}`} {...props}>
     {children}
   </div>
 );
@@ -202,13 +210,13 @@ export const CardHeader = ({ className = "", children, ...props }) => (
 );
 
 export const CardTitle = ({ className = "", children, ...props }) => (
-  <h4 className={`font-bold leading-none ${className}`} {...props}>
+  <h4 className={`font-bold leading-none text-gray-900 dark:text-gray-100 ${className}`} {...props}>
     {children}
   </h4>
 );
 
 export const CardDescription = ({ className = "", children, ...props }) => (
-  <p className={`text-gray-500 text-sm ${className}`} {...props}>
+  <p className={`text-gray-500 dark:text-gray-400 text-sm ${className}`} {...props}>
     {children}
   </p>
 );
@@ -226,9 +234,9 @@ export const CardFooter = ({ className = "", children, ...props }) => (
 );
 
 const BADGE_VARIANTS = {
-  default: "bg-yellow-500 text-gray-900",
-  secondary: "bg-gray-100 text-gray-700",
-  outline: "border border-gray-300 text-gray-700 bg-transparent",
+  default: "bg-yellow-500 text-gray-900 dark:text-gray-100",
+  secondary: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200",
+  outline: "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-transparent",
   destructive: "bg-red-600 text-white",
 };
 
@@ -247,7 +255,7 @@ export const Badge = ({ variant = "default", className = "", children, ...props 
 /* ------------------------------------------------------------------ */
 export const DashboardContainer = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <DashboardHeader />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Outlet />

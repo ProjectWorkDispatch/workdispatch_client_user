@@ -19,9 +19,9 @@ const StarRating = ({ rating = 1 }) => (
     {[1, 2, 3, 4, 5].map((s) => (
       s <= Math.round(rating)
         ? <StarSolid key={s} className="size-3.5 text-yellow-400" />
-        : <StarIcon key={s} className="size-3.5 text-gray-300" />
+        : <StarIcon key={s} className="size-3.5 text-gray-300 dark:text-gray-600" />
     ))}
-    <span className="text-xs text-gray-500 ml-1">{Number(rating).toFixed(1)}</span>
+    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">{Number(rating).toFixed(1)}</span>
   </div>
 );
 
@@ -67,8 +67,8 @@ export const FindWorkers = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-gray-900">Buscar Trabajadores</h1>
-        <p className="text-gray-600 mt-1">Encuentra profesionales calificados para tus proyectos</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Buscar Trabajadores</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Encuentra profesionales calificados para tus proyectos</p>
       </div>
 
       {/* Filtros */}
@@ -78,8 +78,8 @@ export const FindWorkers = () => {
             onClick={() => setViewMode('all')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               viewMode === 'all'
-                ? 'bg-yellow-500 text-gray-900'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+                ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
             }`}
           >
             Todos
@@ -88,27 +88,27 @@ export const FindWorkers = () => {
             onClick={() => setViewMode('favoritos')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               viewMode === 'favoritos'
-                ? 'bg-yellow-500 text-gray-900'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-yellow-400'
+                ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
             }`}
           >
             Favoritos ({favorites.length})
           </button>
         </div>
         <div className="relative flex-1">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Buscar por nombre, descripción o ubicación..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white dark:bg-gray-800 dark:text-gray-300"
           />
         </div>
         <select
           value={filterRating}
           onChange={(e) => setFilterRating(e.target.value)}
-          className="px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white"
+          className="px-4 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white dark:bg-gray-800 dark:text-gray-300"
         >
           <option value="">Todas las calificaciones</option>
           <option value="4">4+ estrellas</option>
@@ -117,7 +117,7 @@ export const FindWorkers = () => {
         </select>
       </div>
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         {filtered.length} trabajador{filtered.length !== 1 ? 'es' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
       </p>
 
@@ -125,15 +125,15 @@ export const FindWorkers = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-48 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
             <UserCircleIcon className="size-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 font-medium">No se encontraron trabajadores</p>
-            <p className="text-gray-400 text-sm mt-1">Intenta con otros filtros de búsqueda</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium">No se encontraron trabajadores</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Intenta con otros filtros de búsqueda</p>
           </CardContent>
         </Card>
       ) : (
@@ -151,12 +151,12 @@ export const FindWorkers = () => {
                     e.stopPropagation();
                     if (currentUserId) toggleFavorite(currentUserId, worker._id);
                   }}
-                  className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors"
+                  className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors"
                 >
                   {favorites.some((f) => (f.workerId?._id || f.workerId) === worker._id) ? (
                     <HeartSolid className="size-5 text-red-500" />
                   ) : (
-                    <HeartIcon className="size-5 text-gray-400 hover:text-red-400" />
+                    <HeartIcon className="size-5 text-gray-400 dark:text-gray-500 hover:text-red-400" />
                   )}
                 </button>
                 <CardContent className="p-5">
@@ -172,7 +172,7 @@ export const FindWorkers = () => {
                         />
                       ) : null}
                       <div
-                        className="size-14 rounded-full bg-yellow-500 text-gray-900 font-black text-lg flex items-center justify-center ring-2 ring-yellow-400/30"
+                        className="size-14 rounded-full bg-yellow-500 text-gray-900 dark:text-gray-100 font-black text-lg flex items-center justify-center ring-2 ring-yellow-400/30"
                         style={{ display: worker.profilePhoto && !worker.profilePhoto.includes('default') ? 'none' : 'flex' }}
                       >
                         {initials || '?'}
@@ -186,23 +186,23 @@ export const FindWorkers = () => {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 truncate">
+                      <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate">
                         {worker.firstName} {worker.lastName}
                       </h3>
                       <StarRating rating={worker.ratingAverage} />
                       {worker.address && (
                         <div className="flex items-center gap-1 mt-1">
-                          <MapPinIcon className="size-3 text-gray-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-500 truncate">{worker.address}</span>
+                          <MapPinIcon className="size-3 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{worker.address}</span>
                         </div>
                       )}
                       {worker.description && (
-                        <p className="text-xs text-gray-500 mt-2 line-clamp-2">{worker.description}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">{worker.description}</p>
                       )}
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     {worker.verificationStatus ? (
                       <Badge variant="default" className="text-[10px]">✓ Verificado</Badge>
                     ) : (

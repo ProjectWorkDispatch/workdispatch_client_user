@@ -6,8 +6,8 @@ export const ConversationItem = ({ conversation, active, currentUserId, onClick 
     return (
         <button
             onClick={onClick}
-            className={`w-full text-left px-4 py-3 border-b border-gray-100 transition ${
-                active ? "bg-yellow-50" : "hover:bg-gray-50"
+            className={`w-full text-left px-4 py-3 border-b border-gray-100 transition dark:border-gray-800 ${
+                active ? "bg-yellow-50 dark:bg-yellow-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-800"
             }`}
         >
             <div className="flex items-start gap-3">
@@ -16,14 +16,14 @@ export const ConversationItem = ({ conversation, active, currentUserId, onClick 
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-semibold text-gray-900 text-sm truncate">{fullName}</h3>
-                        <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                        <h3 className="font-semibold text-gray-900 text-sm truncate dark:text-gray-100">{fullName}</h3>
+                        <span className="text-[11px] text-gray-400 whitespace-nowrap dark:text-gray-500">
                             {conversation.lastMessageAt
                                 ? new Date(conversation.lastMessageAt).toLocaleDateString()
                                 : ""}
                         </span>
                     </div>
-                    <p className="text-sm text-gray-500 truncate mt-0.5">
+                    <p className="text-sm text-gray-500 truncate mt-0.5 dark:text-gray-400">
                         {conversation.lastMessage || "Sin mensajes"}
                     </p>
                 </div>

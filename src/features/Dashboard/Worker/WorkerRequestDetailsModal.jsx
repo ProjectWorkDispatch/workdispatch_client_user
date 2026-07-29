@@ -67,12 +67,12 @@ const getClientName = (client) => {
 };
 
 const DetailItem = ({ icon: Icon, label, value }) => ( // eslint-disable-line no-unused-vars
-  <div className="rounded-lg border border-gray-200 bg-white p-3">
-    <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400">
+  <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
+    <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">
       <Icon className="size-4" />
       {label}
     </div>
-    <p className="text-sm font-bold text-gray-900">{value}</p>
+    <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{value}</p>
   </div>
 );
 
@@ -190,7 +190,7 @@ export const WorkerRequestDetailsModal = ({
   return (
     <Modal open={open} onClose={onClose} title={isServiceMode ? "Detalle del servicio" : "Informacion de la solicitud"} size="xl">
       <div className="space-y-5">
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+        <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -198,7 +198,7 @@ export const WorkerRequestDetailsModal = ({
               className="h-56 w-full object-cover"
             />
           ) : (
-            <div className="flex h-44 flex-col items-center justify-center gap-2 text-gray-400">
+            <div className="flex h-44 flex-col items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
               <PhotoIcon className="size-10" />
               <span className="text-sm font-semibold">Sin imagen adjunta</span>
             </div>
@@ -208,29 +208,29 @@ export const WorkerRequestDetailsModal = ({
         <div>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {isServiceMode && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
                 Servicio
               </span>
             )}
             <span
-              className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[isServiceMode ? service?.status : activeJob?.status] || "bg-gray-100 text-gray-600"}`}
+              className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[isServiceMode ? service?.status : activeJob?.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}
             >
               <span className="size-1.5 rounded-full bg-current" />
               {isServiceMode ? service?.status : activeJob?.status}
             </span>
             {activeJob?.categoryId?.name || activeJob?.customCategory ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium">
                 {activeJob?.categoryId?.name || activeJob?.customCategory}
               </span>
             ) : null}
             {!isServiceMode && alreadyOffered && (
-              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">
+              <span className="rounded-md border border-emerald-200 bg-emerald-50 dark:bg-green-900/30 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-green-400">
                 Ya ofertaste
               </span>
             )}
           </div>
-          <h3 className="text-xl font-black text-gray-900">{activeJob?.title || "Solicitud abierta"}</h3>
-          <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600">
+          <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">{activeJob?.title || "Solicitud abierta"}</h3>
+          <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600 dark:text-gray-400">
             {activeJob?.description || "El cliente aun no agrego una descripcion detallada."}
           </p>
         </div>
@@ -251,38 +251,38 @@ export const WorkerRequestDetailsModal = ({
         </div>
 
         {isServiceMode && (
-          <div className="rounded-lg border border-gray-200 bg-white">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <button
               type="button"
               onClick={() => setShowProposalContext(!showProposalContext)}
               className="flex w-full items-center justify-between p-4 text-left"
             >
-              <span className="text-sm font-bold text-gray-900">Propuesta ganadora</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Propuesta ganadora</span>
               {showProposalContext ? (
-                <ChevronUpIcon className="size-5 text-gray-400" />
+                <ChevronUpIcon className="size-5 text-gray-400 dark:text-gray-500" />
               ) : (
-                <ChevronDownIcon className="size-5 text-gray-400" />
+                <ChevronDownIcon className="size-5 text-gray-400 dark:text-gray-500" />
               )}
             </button>
             {showProposalContext && (
-              <div className="border-t border-gray-100 p-4 space-y-3">
+              <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-3">
                 {proposalLoading ? (
-                  <p className="text-sm text-gray-400">Cargando...</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">Cargando...</p>
                 ) : acceptedProposal ? (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500 uppercase tracking-wide">Precio ofertado</span>
-                      <span className="text-sm font-bold text-gray-900">Q{acceptedProposal.price}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Precio ofertado</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Q{acceptedProposal.price}</span>
                     </div>
                     {acceptedProposal.message && (
                       <div>
-                        <span className="text-xs text-gray-500 uppercase tracking-wide">Mensaje</span>
-                        <p className="mt-1 text-sm text-gray-600 italic">"{acceptedProposal.message}"</p>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Mensaje</span>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 italic">"{acceptedProposal.message}"</p>
                       </div>
                     )}
                   </>
                 ) : (
-                  <p className="text-sm text-gray-400">No se encontró la propuesta original.</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">No se encontró la propuesta original.</p>
                 )}
               </div>
             )}
@@ -290,16 +290,16 @@ export const WorkerRequestDetailsModal = ({
         )}
 
         {isServiceMode && hasWorkPlan && (
-          <div className="rounded-lg border border-gray-200 bg-white">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center justify-between p-4">
-              <span className="text-sm font-bold text-gray-900">Plan de trabajo</span>
-              <span className="text-xs text-gray-500">
+              <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Plan de trabajo</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {localService.workPlan.filter((d) => d.status === "DONE").length}/{localService.workPlan.length} completados
               </span>
             </div>
-            <div className="border-t border-gray-100 p-4 space-y-2">
+            <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-2">
               {localService.workPlan.map((day) => (
-                <div key={day.dayNumber} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <div key={day.dayNumber} className="flex items-start gap-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-3">
                   <button
                     type="button"
                     onClick={() => handleToggleDay(day.dayNumber)}
@@ -315,13 +315,13 @@ export const WorkerRequestDetailsModal = ({
                   </button>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-500 uppercase">Día {day.dayNumber}</span>
-                      <span className="text-[11px] text-gray-400">{formatDate(day.date)}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Día {day.dayNumber}</span>
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500">{formatDate(day.date)}</span>
                       {day.status === "DONE" && (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Hecho</span>
+                        <span className="rounded-full bg-emerald-100 dark:bg-green-900/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-green-400">Hecho</span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm text-gray-700">{day.description}</p>
+                    <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{day.description}</p>
                   </div>
                 </div>
               ))}
@@ -336,24 +336,24 @@ export const WorkerRequestDetailsModal = ({
         )}
 
         {isServiceMode && showScheduleForm && (
-          <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
-            <h4 className="text-sm font-bold text-gray-900">Programar cita y plan de trabajo</h4>
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 space-y-4">
+            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Programar cita y plan de trabajo</h4>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-gray-500">Fecha de la cita</label>
+                <label className="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Fecha de la cita</label>
                 <input
                   type="date"
                   value={scheduleDate}
                   onChange={(e) => setScheduleDate(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-gray-500">Duración estimada (días)</label>
+                <label className="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Duración estimada (días)</label>
                 <select
                   value={scheduleDays}
                   onChange={(e) => setScheduleDays(Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm"
                 >
                   {Array.from({ length: 14 }, (_, i) => (
                     <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -364,7 +364,7 @@ export const WorkerRequestDetailsModal = ({
             <div className="space-y-3">
               {scheduleDescs.map((desc, i) => (
                 <div key={i}>
-                  <label className="mb-1 block text-xs font-semibold text-gray-500">Día {i + 1}</label>
+                  <label className="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Día {i + 1}</label>
                   <textarea
                     rows={2}
                     maxLength={300}
@@ -375,7 +375,7 @@ export const WorkerRequestDetailsModal = ({
                       updated[i] = e.target.value;
                       setScheduleDescs(updated);
                     }}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm resize-none"
+                    className="w-full rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-2 text-sm resize-none"
                   />
                 </div>
               ))}
@@ -393,9 +393,9 @@ export const WorkerRequestDetailsModal = ({
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
           <div>
-            {canReview && (
-              hasReviewed ? (
-                <span className="text-sm text-gray-500">Ya dejaste una reseña</span>
+              {canReview && (
+                hasReviewed ? (
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Ya dejaste una reseña</span>
               ) : (
                 <Button onClick={() => setReviewFlowOpen(true)}>
                   Dejar reseña

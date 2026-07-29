@@ -137,9 +137,9 @@ export const PostServiceReviewFlow = ({
       >
         {step === "prompt" && (
           <div className="py-4 text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               ¿Qué tal estuvo el trabajo con{" "}
-              <span className="font-bold text-gray-900">{revieweredName || "esta persona"}</span>?
+              <span className="font-bold text-gray-900 dark:text-gray-100">{revieweredName || "esta persona"}</span>?
             </p>
           </div>
         )}
@@ -147,23 +147,23 @@ export const PostServiceReviewFlow = ({
         {step === "rate" && (
           <div className="space-y-5">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Estás calificando a</p>
-              <p className="font-bold text-gray-900">{revieweredName || "Usuario"}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Estás calificando a</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{revieweredName || "Usuario"}</p>
             </div>
             <div className="flex flex-col items-center gap-2 py-2">
               <StarRating value={rating} onChange={setRating} />
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-400 dark:text-gray-500">
                 {rating > 0 ? `${rating} de 5 estrellas` : "Selecciona una calificación"}
               </span>
             </div>
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Comentario</label>
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 block">Comentario</label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={4}
                 placeholder="Cuéntanos cómo fue tu experiencia..."
-                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-700 placeholder:text-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 resize-none"
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 resize-none"
               />
             </div>
           </div>
@@ -171,28 +171,28 @@ export const PostServiceReviewFlow = ({
 
         {step === "lowRatingSurvey" && (
           <div className="space-y-5">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Selecciona los motivos que aplican (opcional):
             </p>
             <div className="space-y-2">
               {LOW_RATING_REASONS.map((reason) => (
                 <label
                   key={reason}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-yellow-300 cursor-pointer transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-yellow-300 cursor-pointer transition-colors"
                 >
                   <input
                     type="checkbox"
                     checked={selectedReasons.includes(reason)}
                     onChange={() => toggleReason(reason)}
-                    className="size-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
+                    className="size-4 rounded border-gray-300 dark:border-gray-600 text-yellow-500 focus:ring-yellow-400"
                   />
-                  <span className="text-sm text-gray-700">{reason}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{reason}</span>
                 </label>
               ))}
             </div>
 
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm text-amber-800 mb-2">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-400 p-4">
+              <p className="text-sm text-amber-800 dark:text-amber-400 mb-2">
                 ¿El servicio fue realmente grave? Puedes reportar a{" "}
                 <span className="font-bold">{revieweredName}</span> para que el equipo lo revise.
               </p>
@@ -209,8 +209,8 @@ export const PostServiceReviewFlow = ({
 
         {step === "done" && (
           <div className="py-6 text-center">
-            <p className="text-lg font-bold text-gray-900 mb-1">¡Gracias por tu reseña!</p>
-            <p className="text-sm text-gray-500">Tu opinión ayuda a mejorar la comunidad.</p>
+            <p className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">¡Gracias por tu reseña!</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Tu opinión ayuda a mejorar la comunidad.</p>
           </div>
         )}
       </Modal>

@@ -88,26 +88,26 @@ export const MessagesHome = () => {
     return (
         <div className="space-y-4">
             <div>
-                <h1 className="text-2xl md:text-3xl font-black text-gray-900">Mensajes</h1>
-                <p className="text-gray-600 mt-1">Tus conversaciones sobre solicitudes y servicios</p>
+                <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-gray-100">Mensajes</h1>
+                <p className="text-gray-600 mt-1 dark:text-gray-400">Tus conversaciones sobre solicitudes y servicios</p>
             </div>
 
             <div className="h-[calc(100vh-230px)] flex gap-4">
                 <div className={`${showChat ? "hidden" : "flex"} md:flex w-full md:max-w-xs flex-col`}>
-                    <aside className="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col h-full">
-                        <div className="p-4 border-b border-gray-100 space-y-3">
+                    <aside className="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col h-full dark:bg-gray-800 dark:border-gray-700">
+                        <div className="p-4 border-b border-gray-100 space-y-3 dark:border-gray-800">
                             <div className="flex items-center justify-between gap-2">
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Buscar conversación..."
-                                    className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-600 placeholder:text-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+                                    className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm text-gray-600 placeholder:text-gray-400 dark:border-gray-700 dark:text-gray-400 dark:placeholder:text-gray-500 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
                                 />
                                 <button
                                     onClick={() => setShowNewChatModal(true)}
                                     title="Nuevo chat"
-                                    className="shrink-0 size-9 flex items-center justify-center rounded-xl bg-yellow-400 text-gray-900 hover:bg-yellow-300 transition"
+                                    className="shrink-0 size-9 flex items-center justify-center rounded-xl bg-yellow-400 text-gray-900 dark:text-gray-100 hover:bg-yellow-300 transition"
                                 >
                                     <PlusIcon className="size-5" />
                                 </button>
@@ -120,7 +120,7 @@ export const MessagesHome = () => {
                                 </div>
                             )}
                             {!loading && filtered.length === 0 && (
-                                <div className="px-5 py-10 text-center text-sm text-gray-400 flex flex-col items-center gap-2">
+                                <div className="px-5 py-10 text-center text-sm text-gray-400 flex flex-col items-center gap-2 dark:text-gray-500">
                                     <ChatBubbleLeftRightIcon className="size-8" />
                                     No tienes conversaciones aún
                                 </div>
