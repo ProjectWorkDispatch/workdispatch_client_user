@@ -96,6 +96,10 @@ export const toggleWorkPlanDay = async (serviceId, dayNumber) => {
   return axiosUser.patch(`/Service/work-plan/${serviceId}/${dayNumber}`);
 };
 
+export const verifyWorkDay = async (serviceId, dayNumber, { verified, clientNote }) => {
+  return axiosUser.patch(`/Service/verify-day/${serviceId}/${dayNumber}`, { verified, clientNote });
+};
+
 export const getReviewsByReviewer = async (reviewerId) => {
   return axiosUser.get(`/reviews/client/${reviewerId}`);
 };

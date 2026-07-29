@@ -1,4 +1,6 @@
 import { forwardRef } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const VARIANTS = {
   // Acción principal — igual al botón de "Iniciar Sesión" del login y
@@ -54,10 +56,12 @@ export const Button = forwardRef(function Button(
   const isDisabled = disabled || loading;
 
   return (
-    <button
+    <motion.button
       ref={ref}
       type={type}
       disabled={isDisabled}
+      whileTap={!isDisabled ? { scale: 0.97 } : undefined}
+      transition={{ duration: 0.15 }}
       className={cx(
         "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200",
         "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400",
@@ -78,6 +82,6 @@ export const Button = forwardRef(function Button(
       {!loading && Icon && iconPosition === "left" && <Icon className="size-4" />}
       {children}
       {!loading && Icon && iconPosition === "right" && <Icon className="size-4" />}
-    </button>
+    </motion.button>
   );
 });

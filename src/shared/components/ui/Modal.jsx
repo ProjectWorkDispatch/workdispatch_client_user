@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const SIZES = {
   sm: "max-w-sm",
@@ -47,7 +49,10 @@ export const Modal = ({
         onClick={() => closeOnBackdrop && onClose?.()}
       />
 
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className={`relative w-full ${SIZES[size]} bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
@@ -68,7 +73,7 @@ export const Modal = ({
             {footer}
           </div>
         )}
-      </div>
+      </motion.div>
     </div>,
     document.body
   );

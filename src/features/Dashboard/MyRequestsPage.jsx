@@ -5,6 +5,8 @@ import {
   ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
@@ -251,14 +253,20 @@ export const MyRequestsPage = () => {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredItems.map((item) => {
+          {filteredItems.map((item, index) => {
             const statusInfo = NORMALIZED_STATUS[item._normalizedStatus];
             return (
-              <Card
+              <motion.div
                 key={`${item._type}-${item._id}`}
-                className="cursor-pointer hover:border-yellow-400 hover:shadow-md transition-all"
-                onClick={() => setSelectedItem(item)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
               >
+                <Card
+                  className="cursor-pointer hover:border-yellow-400 hover:shadow-md transition-all"
+                  onClick={() => setSelectedItem(item)}
+                >
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                     <div className="flex items-center gap-4 min-w-0">
@@ -314,7 +322,8 @@ export const MyRequestsPage = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </motion.div>
             );
           })}
         </div>

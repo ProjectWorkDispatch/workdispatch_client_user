@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import { Button } from "../../shared/components/ui/Button";
 import { Modal } from "../../shared/components/ui/Modal";
 import { MapPicker } from "../../shared/components/ui/MapPicker";
@@ -11,6 +11,7 @@ import {
   acceptProposal,
   rejectProposal,
   getGivenReviews,
+  verifyWorkDay,
 } from "../../shared/api/user";
 import { STATUS_BADGE, formatRelativeDate } from "../../shared/utils/statusBadge";
 import { useAuthStore } from "../auth/store/authStore";
@@ -165,6 +166,29 @@ export const ServiceRequestDetailModal = ({
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewFlowOpen, setReviewFlowOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+
+  const [verifyTarget, setVerifyTarget] = useState(null);
+  const [verifyClientNote, setVerifyClientNote] = useState("");
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
+  const handleVerify = async () => {
+    if (!verifyTarget) return;
+    setVerifyLoading(true);
+    try {
+      await verifyWorkDay(service._id, verifyTarget.dayNumber, {
+        verified: verifyTarget.verified,
+        clientNote: verifyTarget.verified ? undefined : verifyClientNote.trim() || undefined,
+      });
+      toast.success(verifyTarget.verified ? "Día verificado" : "Día disputado");
+      setVerifyTarget(null);
+      setVerifyClientNote("");
+      onActionTaken?.();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error al verificar el día");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!canReview || !currentUserId) return;
@@ -354,7 +378,7 @@ export const ServiceRequestDetailModal = ({
             </div>
           )}
 
-          {isServiceMode && Array.isArray(service.workPlan) && service.workPlan.length > 0 && (
+          {isServiceMode && (
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <button
                 type="button"
@@ -363,9 +387,11 @@ export const ServiceRequestDetailModal = ({
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Plan de trabajo</span>
-                  <span className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
-                    {service.workPlan.filter((d) => d.status === "DONE").length}/{service.workPlan.length}
-                  </span>
+                  {Array.isArray(service.workPlan) && service.workPlan.length > 0 && (
+                    <span className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
+                      {service.workPlan.filter((d) => d.status === "VERIFIED").length}/{service.workPlan.length}
+                    </span>
+                  )}
                 </div>
                 {showWorkPlan ? (
                   <ChevronUpIcon className="size-5 text-gray-400 dark:text-gray-500" />
@@ -375,32 +401,110 @@ export const ServiceRequestDetailModal = ({
               </button>
               {showWorkPlan && (
                 <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-2">
-                  {service.scheduledDate && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                      Cita: {new Date(service.scheduledDate).toLocaleDateString("es-GT", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                  {service.estimatedStartDate && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                      <span>
+                        Inicio: {new Date(service.estimatedStartDate).toLocaleDateString("es-GT", { day: "numeric", month: "short" })}
+                      </span>
+                      {service.estimatedEndDate && (
+                        <>
+                          <span>→</span>
+                          <span>
+                            Fin: {new Date(service.estimatedEndDate).toLocaleDateString("es-GT", { day: "numeric", month: "short" })}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {service.generalPlan && (
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 p-3 mb-2">
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Plan general</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{service.generalPlan}</p>
+                    </div>
+                  )}
+
+                  {Array.isArray(service.workPlan) && service.workPlan.length > 0 ? (
+                    service.workPlan
+                      .slice()
+                      .sort((a, b) => a.dayNumber - b.dayNumber)
+                      .map((day) => {
+                        const isPending = day.status === "PENDING";
+                        const isDone = day.status === "DONE";
+                        const isVerified = day.status === "VERIFIED";
+                        const isDisputed = day.status === "DISPUTED";
+
+                        let iconClass = "text-gray-300 dark:text-gray-600";
+                        let icon = "check-circle";
+                        if (isVerified) { iconClass = "text-blue-500 dark:text-blue-400"; }
+                        else if (isDisputed) { iconClass = "text-red-500 dark:text-red-400"; icon = "x-circle"; }
+                        else if (isDone) { iconClass = "text-amber-500 dark:text-amber-400"; icon = "clock"; }
+                        else { icon = "circle"; }
+
+                        let bgClass = "bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-700";
+                        if (isDone) bgClass = "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800";
+                        if (isVerified) bgClass = "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
+                        if (isDisputed) bgClass = "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
+
+                        return (
+                          <div key={day.dayNumber} className={`flex items-start gap-3 rounded-lg border ${bgClass} p-3`}>
+                            <svg className={`size-5 shrink-0 mt-0.5 ${iconClass}`} fill="currentColor" viewBox="0 0 20 20">
+                              {icon === "check-circle" && <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />}
+                              {icon === "x-circle" && <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />}
+                              {icon === "clock" && <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />}
+                              {icon === "circle" && <path d="M10 18a8 8 0 100-16 8 8 0 000 16z" />}
+                            </svg>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Día {day.dayNumber}</span>
+                                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                                  {new Date(day.date).toLocaleDateString("es-GT", { day: "2-digit", month: "short" })}
+                                </span>
+                                {isVerified && <span className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">Verificado</span>}
+                                {isDisputed && <span className="rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:text-red-400">Disputado</span>}
+                                {isDone && <span className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">Completado</span>}
+                                {isPending && <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">Pendiente</span>}
+                              </div>
+                              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{day.description}</p>
+
+                              {isDone && (
+                                <div className="flex gap-2 mt-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => setVerifyTarget({ dayNumber: day.dayNumber, verified: true })}
+                                    disabled={verifyLoading}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+                                  >
+                                    <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                    Verificar
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => { setVerifyTarget({ dayNumber: day.dayNumber, verified: false }); setVerifyClientNote(""); }}
+                                    disabled={verifyLoading}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
+                                  >
+                                    <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                    Disputar
+                                  </button>
+                                </div>
+                              )}
+
+                              {isDisputed && day.clientNote && (
+                                <div className="mt-2 rounded bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-2">
+                                  <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase">Tu nota:</p>
+                                  <p className="text-xs text-red-700 dark:text-red-300">{day.clientNote}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">
+                      El trabajador aún no ha agregado días al plan.
                     </p>
                   )}
-                  {service.workPlan.map((day) => (
-                    <div key={day.dayNumber} className="flex items-start gap-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-3">
-                      <CheckCircleIcon
-                        className={`size-5 shrink-0 mt-0.5 ${
-                          day.status === "DONE" ? "text-emerald-500" : "text-gray-300"
-                        }`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Día {day.dayNumber}</span>
-                          <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                            {new Date(day.date).toLocaleDateString("es-GT", { day: "2-digit", month: "short" })}
-                          </span>
-                          {day.status === "DONE" && (
-                            <span className="rounded-full bg-emerald-100 dark:bg-green-900/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-green-400">Completado</span>
-                          )}
-                        </div>
-                        <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{day.description}</p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               )}
             </div>
@@ -519,6 +623,49 @@ export const ServiceRequestDetailModal = ({
           onChange={(e) => setRejectReason(e.target.value)}
         />
         <p className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1">{rejectReason.length}/300</p>
+      </Modal>
+
+      {/* Verify / Dispute modal */}
+      <Modal
+        open={!!verifyTarget}
+        onClose={() => { setVerifyTarget(null); setVerifyClientNote(""); }}
+        title={verifyTarget?.verified ? "Verificar día" : "Disputar día"}
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setVerifyTarget(null); setVerifyClientNote(""); }}>
+              Cancelar
+            </Button>
+            <Button
+              variant={verifyTarget?.verified ? "primary" : "destructive"}
+              disabled={verifyLoading}
+              onClick={handleVerify}
+            >
+              {verifyLoading ? "Procesando..." : verifyTarget?.verified ? "Sí, verificar" : "Sí, disputar"}
+            </Button>
+          </div>
+        }
+      >
+        {verifyTarget?.verified ? (
+          <p className="text-sm text-gray-600">
+            Vas a confirmar que el trabajador completó el día {verifyTarget?.dayNumber} correctamente.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-gray-600 mb-3">
+              Vas a disputar el día {verifyTarget?.dayNumber}. Esto afectará la reputación del trabajador.
+            </p>
+            <label className="block text-xs font-bold text-gray-700 mb-1">Motivo (opcional)</label>
+            <textarea
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+              rows={3}
+              maxLength={300}
+              placeholder="Describí por qué estás disputando este día..."
+              value={verifyClientNote}
+              onChange={(e) => setVerifyClientNote(e.target.value)}
+            />
+          </>
+        )}
       </Modal>
 
       {isServiceMode && (
