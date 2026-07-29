@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   HomeIcon,
@@ -132,7 +134,9 @@ const DashboardHeader = () => {
             </Link>
 
             <Button variant="ghostDark" size="icon" className="rounded-full" onClick={toggleColorMode} title={mode === "dark" ? "Modo claro" : "Modo oscuro"}>
-              {mode === "dark" ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />}
+              <motion.span whileTap={{ scale: 0.9 }} className="block">
+                {mode === "dark" ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />}
+              </motion.span>            
             </Button>
 
             <div className="hidden xl:flex items-center bg-gray-700/50 border border-yellow-500/30 px-3 py-1.5 rounded-full text-sm font-medium text-yellow-400">
@@ -168,27 +172,35 @@ const DashboardHeader = () => {
       </div>
 
       {/* Panel móvil */}
-      {mobileMenuOpen && (
-        <div className="xl:hidden bg-gray-900 border-t border-gray-700 px-4 py-4">
-          <nav className="flex flex-col gap-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.to);
-              return (
-                <Link key={item.to} to={item.to} onClick={() => setMobileMenuOpen(false)}>
-                  <Button
-                    variant={active ? "primary" : "ghostDark"}
-                    className={`w-full justify-start ${active ? "!bg-yellow-500 !text-gray-900" : ""}`}
-                  >
-                    <Icon className="size-4" />
-                    {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="xl:hidden bg-gray-900 border-t border-gray-700 px-4 py-4 overflow-hidden"
+          >
+            <nav className="flex flex-col gap-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.to);
+                return (
+                  <Link key={item.to} to={item.to} onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      variant={active ? "primary" : "ghostDark"}
+                      className={`w-full justify-start ${active ? "!bg-yellow-500 !text-gray-900" : ""}`}
+                    >
+                      <Icon className="size-4" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

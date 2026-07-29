@@ -7,6 +7,8 @@ import {
   MapPinIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { DashboardStats } from "./DashboardStats";
@@ -93,29 +95,36 @@ export const ClientDashboardSummary = () => {
       ) : (
         <>
           <div className="space-y-4">
-            {recentRequests.map((req) => (
-              <Card
+            {recentRequests.map((req, index) => (
+              <motion.div
                 key={req._id}
-                className="cursor-pointer hover:border-yellow-400 hover:shadow-md transition-all"
-                onClick={() => setSelectedRequest(req)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
               >
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-900 dark:text-gray-100">{req.title}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{req.categoryId?.name || req.customCategory || "Sin categoría"}</p>
+                <Card
+                  className="cursor-pointer hover:border-yellow-400 hover:shadow-md transition-all"
+                  onClick={() => setSelectedRequest(req)}
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-bold text-gray-900 dark:text-gray-100">{req.title}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{req.categoryId?.name || req.customCategory || "Sin categoría"}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[req.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
+                          {req.status}
+                        </span>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          Q{req.budgetMin} - Q{req.budgetMax}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_BADGE[req.status] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
-                        {req.status}
-                      </span>
-                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        Q{req.budgetMin} - Q{req.budgetMax}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
           <Button variant="outline" onClick={() => navigate("/dashboard/my-requests")}>
