@@ -9,7 +9,6 @@ import { ServiceRequestDetailPage } from "../../features/Dashboard/ServiceReques
 import { ClientServiceDetailPage } from "../../features/Dashboard/ClientServiceDetailPage.jsx";
 import { WorkerMyJobsPage } from "../../features/Dashboard/Worker/WorkerMyJobsPage.jsx";
 import { WorkerFindJobsPage } from "../../features/Dashboard/Worker/WorkerFindJobsPage.jsx";
-import { WorkerOffersPage } from "../../features/Proposals/Worker/WorkerOffersPage.jsx";
 import { WorkerProposalDetailPage } from "../../features/Proposals/Worker/WorkerProposalDetailPage.jsx";
 import { WorkerServiceDetailPage } from "../../features/Services/Worker/WorkerServiceDetailPage.jsx";
 import { WorkerServicesPage } from "../../features/Services/Worker/WorkerServicesPage.jsx";
@@ -59,7 +58,6 @@ export const AppRoutes = () => {
         <Route path="my-jobs" element={<WorkerMyJobsPage />} />
         <Route path="find-jobs" element={<WorkerFindJobsPage />} />
 
-        <Route path="my-offers" element={<WorkerOffersPage />} />
         <Route path="my-offers/:id" element={<WorkerProposalDetailPage />} />
         <Route path="worker-service" element={<WorkerServicesPage />} />
         <Route path="worker-service/:id" element={<WorkerServiceDetailPage />} />

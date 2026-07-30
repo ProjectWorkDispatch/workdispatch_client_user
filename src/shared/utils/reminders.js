@@ -40,7 +40,6 @@ export function getMeetingReminders(meetings, userId) {
       const otherName = other ? `${other.firstName || ''} ${other.lastName || ''}`.trim() : 'la otra persona';
       const date = new Date(m.startTime);
       const requestId = getIdString(m.serviceRequestId);
-      const proposalId = getIdString(m.proposalId);
 
       return {
         id: `meeting-${m._id}`,
@@ -50,8 +49,9 @@ export function getMeetingReminders(meetings, userId) {
         badge: formatMeetingDate(date),
         overdue: date.getTime() < now,
         sortDate: date.getTime(),
-        route: isClient ? `/dashboard/my-requests/${requestId}` : `/dashboard/worker-service`,
-        state: isClient ? undefined : { openMeetingId: m._id },      };
+        route: `/dashboard/my-requests`,
+        state: { openMeetingId: m._id },
+      };
     })
     .sort((a, b) => a.sortDate - b.sortDate);
 }

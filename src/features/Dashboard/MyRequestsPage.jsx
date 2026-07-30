@@ -7,7 +7,7 @@ import {
 import toast from "react-hot-toast";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../shared/components/ui/Button";
 import { Card, CardContent } from "../../shared/components/layout/DashboardContainer";
 import { NewServiceRequestModal } from "./NewServiceRequestModal";
@@ -110,6 +110,7 @@ export const MyRequestsPage = () => {
   const { user } = useAuthStore();
   const userId = user?._id || user?.id;
   const navigate = useNavigate();
+  const location = useLocation();
   const startConversation = useMessagesStore((s) => s.startConversation);
   const [openModal, setOpenModal] = useState(false);
   const [requests, setRequests] = useState([]);
@@ -161,7 +162,26 @@ export const MyRequestsPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.openMeetingId) {
+      setSelectedMeeting(location.state.openMeetingId);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
+
   const mergedItems = useMemo(() => mergeAndSort(requests, services), [requests, services]);
+
+  useEffect(() => {
+    if (location.state?.openItemId && mergedItems.length > 0) {
+      const found = mergedItems.find(
+        (i) => i._id === location.state.openItemId && i._type === location.state.openItemType
+      );
+      if (found) {
+        setSelectedItem(found);
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location.state, mergedItems]);
 
   const filteredItems = useMemo(() => {
     let items = mergedItems;

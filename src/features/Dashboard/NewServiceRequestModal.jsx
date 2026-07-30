@@ -94,8 +94,8 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
         budgetMax: String(data.budgetMax ?? prev.budgetMax)
       }));
       toast.success(`Estimado: ${data.estimatedTime}`);
-    } catch {
-      toast.error("No se pudo generar el estimado con IA");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "No se pudo generar el estimado con IA");
     } finally {
       setAiLoading(false);
     }
@@ -111,8 +111,8 @@ export const NewServiceRequestModal = ({ open, onClose, onCreated }) => {
       e.categoryId = "Escribí tu categoría personalizada";
     } if (!form.address) e.address = "La dirección es obligatoria";
     if (!form.latitude || !form.longitude) e.location = "Selecciona la ubicación en el mapa";
-    if (!form.budgetMin || parseFloat(form.budgetMin) < 0) e.budgetMin = "El presupuesto mínimo no puede ser negativo";
-    if (!form.budgetMax || parseFloat(form.budgetMax) < 0) e.budgetMax = "El presupuesto máximo no puede ser negativo";
+    if (!form.budgetMin || parseFloat(form.budgetMin) < 10) e.budgetMin = "El presupuesto mínimo debe ser al menos Q10";
+    if (!form.budgetMax || parseFloat(form.budgetMax) < 10) e.budgetMax = "El presupuesto máximo debe ser al menos Q10";
     if (form.budgetMin && form.budgetMax && parseFloat(form.budgetMax) < parseFloat(form.budgetMin)) {
       e.budgetMax = "El presupuesto máximo no puede ser menor al mínimo";
     }

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import toast from 'react-hot-toast';
 
-import { login as loginRequest, register as registerRequest, registerUserProfile, getWorkerById } from "../../../shared/api";
+import { login as loginRequest, register as registerRequest, getWorkerById } from "../../../shared/api";
 const ALLOWED_ROLES = ["CLIENT", "WORKER"];
 
 function toAbsoluteExpiresAt(value) {
@@ -166,12 +166,6 @@ export const useAuthStore = create(
           set({ loading: true, error: null });
 
           const { data } = await registerRequest(formData);
-
-          try {
-            await registerUserProfile(formData);
-          } catch (profileError) {
-            console.error("Error creando perfil en user-service:", profileError);
-          }
 
           set({ loading: false });
 

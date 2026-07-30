@@ -217,7 +217,7 @@ export const WorkerProposalDetailPage = () => {
         <p className="text-lg font-semibold text-gray-700">{error || "Propuesta no encontrada"}</p>
         <button
           type="button"
-          onClick={() => navigate("/dashboard/my-offers")}
+          onClick={() => navigate("/dashboard/worker-service")}
           className="rounded-lg bg-yellow-400 px-4 py-2 text-sm font-bold text-gray-900"
         >
           Volver
@@ -233,7 +233,7 @@ export const WorkerProposalDetailPage = () => {
     <div className="space-y-6">
       <button
         type="button"
-        onClick={() => navigate("/dashboard/my-offers")}
+        onClick={() => navigate("/dashboard/worker-service")}
         className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-gray-900"
       >
         <ArrowLeftIcon className="size-4" />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronUpIcon, ClockIcon, CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 import { Button } from "../../shared/components/ui/Button";
 import { Modal } from "../../shared/components/ui/Modal";
 import { MapPicker } from "../../shared/components/ui/MapPicker";
@@ -12,6 +12,11 @@ import {
   rejectProposal,
   getGivenReviews,
   verifyWorkDay,
+  requestMeeting,
+  confirmMeeting,
+  proposeAlternativeTime,
+  cancelMeeting,
+  getServiceRequestMeeting,
 } from "../../shared/api/user";
 import { STATUS_BADGE, formatRelativeDate } from "../../shared/utils/statusBadge";
 import { useAuthStore } from "../auth/store/authStore";
@@ -80,12 +85,14 @@ export const ServiceRequestDetailModal = ({
     setLoading(true);
     setError(null);
     try {
-      const [requestRes, proposalsRes] = await Promise.all([
+      const [requestRes, proposalsRes, srMeetingRes] = await Promise.all([
         getServiceRequestById(serviceRequestId),
         getProposalsForRequest(serviceRequestId),
+        getServiceRequestMeeting(serviceRequestId).catch(() => null),
       ]);
       setServiceRequest(requestRes.data.data || requestRes.data);
       setProposals(proposalsRes.data.proposals || []);
+      if (srMeetingRes?.data?.data) setSrMeeting(srMeetingRes.data.data);
     } catch (err) {
       if (err.response?.status === 404 || err.response?.status === 403) {
         setError(err.response?.data?.message || "Solicitud no encontrada");
@@ -171,6 +178,138 @@ export const ServiceRequestDetailModal = ({
   const [verifyClientNote, setVerifyClientNote] = useState("");
   const [verifyLoading, setVerifyLoading] = useState(false);
 
+  const [meetingLoading, setMeetingLoading] = useState(null);
+  const [pickerTarget, setPickerTarget] = useState(null);
+  const [pickerDate, setPickerDate] = useState("");
+  const [meetingsByProposal, setMeetingsByProposal] = useState({});
+  const [srMeeting, setSrMeeting] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerMeetingId, setDatePickerMeetingId] = useState(null);
+  const [proposeDate, setProposeDate] = useState("");
+
+  const formatDateTime = (iso) => {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    return new Intl.DateTimeFormat("es-GT", { dateStyle: "full", timeStyle: "short" }).format(d);
+  };
+
+  const handleRequestMeeting = async () => {
+    if (!pickerTarget || !pickerDate) return;
+    const { proposalId } = pickerTarget;
+    setMeetingLoading(proposalId);
+    try {
+      const res = await requestMeeting(proposalId, pickerDate);
+      toast.success("Entrevista solicitada");
+      setMeetingsByProposal((prev) => ({ ...prev, [proposalId]: res.data.data }));
+      setPickerTarget(null); setPickerDate("");
+    } catch (err) { toast.error(err.response?.data?.message || "Error al solicitar entrevista"); }
+    finally { setMeetingLoading(null); }
+  };
+
+  const handleConfirmMeeting = async (meetingId) => {
+    setMeetingLoading("confirm");
+    try {
+      const res = await confirmMeeting(meetingId);
+      toast.success("Asistencia confirmada");
+      const updated = res.data.data;
+      if (pickerTarget?.proposalId) {
+        setMeetingsByProposal((prev) => ({ ...prev, [pickerTarget.proposalId]: updated }));
+      } else if (srMeeting) setSrMeeting(updated);
+    } catch (err) { toast.error(err.response?.data?.message || "Error al confirmar"); }
+    finally { setMeetingLoading(null); }
+  };
+
+  const handleProposeTime = async () => {
+    if (!proposeDate || !datePickerMeetingId) return;
+    setMeetingLoading("propose");
+    try {
+      const res = await proposeAlternativeTime(datePickerMeetingId, proposeDate);
+      toast.success("Nuevo horario propuesto");
+      setShowDatePicker(false); setDatePickerMeetingId(null); setProposeDate("");
+      const updated = res.data.data;
+      for (const key of Object.keys(meetingsByProposal)) {
+        if (meetingsByProposal[key]._id === datePickerMeetingId) {
+          setMeetingsByProposal((prev) => ({ ...prev, [key]: updated }));
+          return;
+        }
+      }
+      if (srMeeting?._id === datePickerMeetingId) setSrMeeting(updated);
+    } catch (err) { toast.error(err.response?.data?.message || "Error al proponer horario"); }
+    finally { setMeetingLoading(null); }
+  };
+
+  const handleCancelMeeting = async (meetingId) => {
+    setMeetingLoading("cancel");
+    try {
+      await cancelMeeting(meetingId);
+      toast.success("Entrevista cancelada");
+      for (const key of Object.keys(meetingsByProposal)) {
+        if (meetingsByProposal[key]._id === meetingId) {
+          setMeetingsByProposal((prev) => ({ ...prev, [key]: { ...prev[key], status: "CANCELLED" } }));
+          return;
+        }
+      }
+      if (srMeeting?._id === meetingId) setSrMeeting(null);
+    } catch (err) { toast.error(err.response?.data?.message || "Error al cancelar"); }
+    finally { setMeetingLoading(null); }
+  };
+
+  const renderMeetingSection = (meeting) => {
+    if (!meeting || meeting.status === "CANCELLED") return null;
+    const formattedTime = formatDateTime(meeting.startTime);
+    return (
+      <div className="mt-3 rounded-lg border p-4">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">Entrevista</h3>
+        {meeting.status === "CONFIRMED" ? (
+          <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircleIcon className="size-4 text-emerald-600" />
+              <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Confirmada</span>
+            </div>
+            {formattedTime && <p className="text-sm text-emerald-600 dark:text-emerald-400">{formattedTime}</p>}
+            {meeting.meetLink && (
+              <a href={meeting.meetLink} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-sm font-bold text-blue-600 underline">
+                <VideoCameraIcon className="size-4" /> Abrir videollamada
+              </a>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <ClockIcon className="size-4 text-yellow-600" />
+              <span className="text-sm font-bold text-yellow-700 dark:text-yellow-400">Solicitada</span>
+            </div>
+            {formattedTime && (
+              <p className="text-sm text-yellow-600 dark:text-yellow-400 mb-2">
+                {meeting.lastProposedBy === "CLIENT" ? "Propusiste: " : "Proponen: "}{formattedTime}
+              </p>
+            )}
+            {!meeting.confirmedByClient && (
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => handleConfirmMeeting(meeting._id)} disabled={meetingLoading === "confirm"} className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
+                  {meetingLoading === "confirm" ? "..." : "Aceptar horario"}
+                </button>
+                <button type="button" onClick={() => { setDatePickerMeetingId(meeting._id); setShowDatePicker(true); }} disabled={meetingLoading === "propose"} className="rounded-lg border border-yellow-400 bg-white px-3 py-1.5 text-xs font-bold text-yellow-700 hover:bg-yellow-50 disabled:opacity-50">
+                  Proponer otra hora
+                </button>
+                <button type="button" onClick={() => handleCancelMeeting(meeting._id)} disabled={meetingLoading === "cancel"} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                  Rechazar
+                </button>
+              </div>
+            )}
+            {meeting.confirmedByWorker && meeting.confirmedByClient && (
+              <p className="text-xs italic text-emerald-600">Ambos confirmaron</p>
+            )}
+            {meeting.confirmedByClient && !meeting.confirmedByWorker && (
+              <p className="text-xs italic text-yellow-600">Esperando confirmación del trabajador</p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleVerify = async () => {
     if (!verifyTarget) return;
     setVerifyLoading(true);
@@ -206,6 +345,14 @@ export const ServiceRequestDetailModal = ({
       .catch(() => {});
     return () => { cancelled = true; };
   }, [canReview, currentUserId, service?._id]);
+
+  useEffect(() => {
+    if (open && isServiceMode && serviceRequestIdForProposal) {
+      getServiceRequestMeeting(serviceRequestIdForProposal)
+        .then((res) => { if (res.data?.data) setSrMeeting(res.data.data); })
+        .catch(() => {});
+    }
+  }, [open, isServiceMode, serviceRequestIdForProposal]);
 
   return (
     <Modal
@@ -340,6 +487,8 @@ export const ServiceRequestDetailModal = ({
               </div>
             )}
           </div>
+
+          {renderMeetingSection(srMeeting)}
 
           {isServiceMode && (
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -553,7 +702,7 @@ export const ServiceRequestDetailModal = ({
                       {proposal.message && (
                         <p className="text-sm text-gray-600 dark:text-gray-400 italic mb-3">"{proposal.message}"</p>
                       )}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Button
                           size="sm"
                           onClick={() => handleAccept(proposal._id)}
@@ -577,7 +726,13 @@ export const ServiceRequestDetailModal = ({
                         >
                           Ver perfil
                         </Button>
+                        {(!meetingsByProposal[proposal._id] || meetingsByProposal[proposal._id].status === "CANCELLED") && (
+                          <Button size="sm" variant="outline" onClick={() => setPickerTarget({ proposalId: proposal._id })} disabled={meetingLoading === proposal._id}>
+                            {meetingLoading === proposal._id ? "..." : "Entrevista"}
+                          </Button>
+                        )}
                       </div>
+                      {meetingsByProposal[proposal._id] && renderMeetingSection(meetingsByProposal[proposal._id])}
                     </div>
                   ))}
                 </div>
@@ -690,6 +845,30 @@ export const ServiceRequestDetailModal = ({
           reporteredName={service.workerId ? `${service.workerId.firstName} ${service.workerId.lastName}` : ""}
         />
       )}
+
+      <Modal open={!!pickerTarget} onClose={() => { setPickerTarget(null); setPickerDate(""); }} title="Solicitar entrevista" size="sm"
+        footer={<div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => { setPickerTarget(null); setPickerDate(""); }}>Cancelar</Button>
+          <Button disabled={!pickerDate || meetingLoading === pickerTarget?.proposalId} onClick={handleRequestMeeting}>
+            {meetingLoading === pickerTarget?.proposalId ? "Enviando..." : "Enviar solicitud"}
+          </Button>
+        </div>}
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Elegí la fecha y hora para la entrevista.</p>
+        <input type="datetime-local" value={pickerDate} onChange={(e) => setPickerDate(e.target.value)} className="w-full h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm" />
+      </Modal>
+
+      <Modal open={showDatePicker} onClose={() => { setShowDatePicker(false); setDatePickerMeetingId(null); setProposeDate(""); }} title="Proponer otro horario" size="sm"
+        footer={<div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => { setShowDatePicker(false); setDatePickerMeetingId(null); setProposeDate(""); }}>Cancelar</Button>
+          <Button disabled={!proposeDate || meetingLoading === "propose"} onClick={handleProposeTime}>
+            {meetingLoading === "propose" ? "..." : "Proponer"}
+          </Button>
+        </div>}
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Elegí una nueva fecha y hora.</p>
+        <input type="datetime-local" value={proposeDate} onChange={(e) => setProposeDate(e.target.value)} className="w-full h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm" />
+      </Modal>
     </Modal>
   );
 };
