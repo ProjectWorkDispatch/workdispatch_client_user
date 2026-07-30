@@ -160,11 +160,7 @@ export const ClientDashboardSummary = () => {
   const previewItems = useMemo(() => mergedItems.slice(0, 3), [mergedItems]);
 
   const handleItemPress = (item) => {
-    if (item._type === "serviceRequest") {
-      navigate(`/dashboard/my-requests/${item._id}`);
-    } else {
-      navigate(`/dashboard/worker-service/${item._id}`);
-    }
+    navigate("/dashboard/my-requests", { state: { openItemId: item._id, openItemType: item._type } });
   };
 
   return (
@@ -196,7 +192,7 @@ export const ClientDashboardSummary = () => {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => navigate(item.route)}
+                    onClick={() => navigate(item.route, { state: item.state })}
                     className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left"
                   >
                     <div className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${item.overdue ? "bg-red-100 dark:bg-red-900/30" : "bg-yellow-100 dark:bg-yellow-900/30"}`}>

@@ -43,7 +43,7 @@ export const MapPicker = ({ lat, lng, onLocationChange, readOnly = false }) => {
   const position = lat && lng ? [parseFloat(lat), parseFloat(lng)] : null;
 
   return (
-    <div className="rounded-lg border border-gray-300 overflow-hidden">
+    <div className="relative z-0 isolate rounded-lg border border-gray-300 overflow-hidden">
       <MapContainer
         center={position || DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
