@@ -5,6 +5,7 @@ import { useAuthStore } from '../../auth/store/authStore';
 import { Button } from '../../../shared/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, Badge } from '../../../shared/components/layout/DashboardContainer';
 import toast from 'react-hot-toast';
+import { sanitizeDocumentNumber, getDocumentMaxLength, getDocumentPlaceholder } from '../../../shared/utils/inputRestrictions';
 
 const STATUS_CONFIG = {
   PENDING:  { label: 'Pendiente de revisión', icon: ClockIcon,        color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-200',  badge: 'default' },
@@ -141,11 +142,17 @@ export const VerificationView = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Número de documento</label>
               <input
                 type="text"
-                placeholder="Ej: 2345 67890 1234"
+                placeholder={getDocumentPlaceholder(form.documentType)}
                 value={form.documentNumber}
-                onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
+                onChange={(e) => setForm({ ...form, documentNumber: sanitizeDocumentNumber(e.target.value, form.documentType) })}
+                maxLength={getDocumentMaxLength(form.documentType)}
                 className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
+              {form.documentType && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {form.documentNumber.length}/{getDocumentMaxLength(form.documentType)} dígitos
+                </p>
+              )}
             </div>
 
             {/* Fotos */}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore.js";
 import { sanitizeLettersOnly, sanitizePhone } from "../../../shared/utils/inputRestrictions.js";
+import { MapPicker } from "../../../shared/components/ui/MapPicker";
 
 export const RegisterForm = ({ onRegister }) => {
   const { register, loading } = useAuthStore();
@@ -14,6 +15,9 @@ export const RegisterForm = ({ onRegister }) => {
     role: "CLIENT",
     password: "",
     confirmPassword: "",
+    address: "",
+    latitude: null,
+    longitude: null,
   });
 
   const handleChange = (e) => {
@@ -45,6 +49,9 @@ export const RegisterForm = ({ onRegister }) => {
       phone: form.phone,
       role: form.role,
       password: form.password,
+      address: form.address,
+      latitude: form.latitude,
+      longitude: form.longitude,
     };
 
     const result = await register(payload);
@@ -146,6 +153,31 @@ export const RegisterForm = ({ onRegister }) => {
           onChange={handleChange}
           placeholder="Repite tu contraseña"
           className="w-full px-3 py-2 text-sm bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        />
+      </div>
+
+      {/* Dirección y ubicación (opcional) */}
+      <div className="space-y-1">
+        <label className="block text-xs font-medium text-gray-300">Dirección</label>
+        <input
+          type="text"
+          name="address"
+          value={form.address}
+          onChange={(e) => setForm({ ...form, address: e.target.value })}
+          placeholder="Tu dirección (opcional)"
+          className="w-full px-3 py-2 text-sm bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        />
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-gray-300 mb-1.5">Ubicación en el mapa (opcional)</p>
+        <p className="text-[10px] text-gray-400 mb-2">
+          Agrega tu dirección para que los trabajadores/clientes puedan ubicarte mejor.
+        </p>
+        <MapPicker
+          lat={form.latitude}
+          lng={form.longitude}
+          onLocationChange={(lat, lng) => setForm({ ...form, latitude: lat, longitude: lng })}
         />
       </div>
 

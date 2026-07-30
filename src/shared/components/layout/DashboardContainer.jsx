@@ -17,6 +17,9 @@ import {
   StarIcon,
   SunIcon,
   MoonIcon,
+  DocumentTextIcon,
+  FlagIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import logoWorkDispatch from "../../../assets/img/logo_Workdispatch.png";
 import { useAuthStore } from "../../../features/auth/store/authStore";
@@ -29,17 +32,16 @@ import { useColorMode } from "../../hooks/useColorMode";
 /* ------------------------------------------------------------------ */
 const CLIENT_NAV = [
   { label: "Inicio", to: "/dashboard", icon: HomeIcon },
-  { label: "Mis Solicitudes", to: "/dashboard/my-requests", icon: ClipboardDocumentListIcon },
-  { label: "Buscar Trabajadores", to: "/dashboard/find-workers", icon: MagnifyingGlassIcon },
-  { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
+  { label: "Buscar", to: "/dashboard/find-workers", icon: MagnifyingGlassIcon },
+  { label: "Contratos", to: "/dashboard/my-requests", icon: ClipboardDocumentListIcon },
+  { label: "Perfil", to: "/dashboard/profile", icon: UserGroupIcon },
 ];
 
 const WORKER_NAV = [
-  { label: "Trabajos Disponibles", to: "/dashboard", icon: BriefcaseIcon },
-  { label: "Mis Trabajos", to: "/dashboard/my-jobs", icon: ClipboardDocumentListIcon },
-  { label: "Verificación", to: "/dashboard/verification", icon: ShieldCheckIcon },
-
-  { label: "Mis Reseñas", to: "/dashboard/reviews", icon: StarIcon },
+  { label: "Inicio", to: "/dashboard", icon: HomeIcon },
+  { label: "Buscar", to: "/dashboard/find-jobs", icon: MagnifyingGlassIcon },
+  { label: "Servicios", to: "/dashboard/worker-service", icon: BriefcaseIcon },
+  { label: "Perfil", to: "/dashboard/profile", icon: UserGroupIcon },
 ];
 
 /* ------------------------------------------------------------------ */

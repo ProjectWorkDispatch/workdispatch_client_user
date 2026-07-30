@@ -16,7 +16,9 @@ import {
   getMyServiceRequests,
   getClientServices,
   getCategories,
+  getMeetingsByUser,
 } from "../../shared/api/user";
+import { MeetingDetailModal } from "../Dashboard/Worker/MeetingDetailModal";
 import { useAuthStore } from "../auth/store/authStore";
 import { useMessagesStore } from "../../shared/store/userStore.js";
 import { formatRelativeDate } from "../../shared/utils/statusBadge";
@@ -118,6 +120,8 @@ export const MyRequestsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [messagingId, setMessagingId] = useState(null);
+  const [meetings, setMeetings] = useState([]);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
 
   const handleChat = async (e, workerId) => {
     e.stopPropagation();
@@ -136,14 +140,16 @@ export const MyRequestsPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [requestsRes, servicesRes, categoriesRes] = await Promise.all([
+      const [requestsRes, servicesRes, categoriesRes, meetingsRes] = await Promise.all([
         getMyServiceRequests(),
         userId ? getClientServices(userId) : Promise.resolve({ data: { services: [] } }),
         getCategories(),
+        userId ? getMeetingsByUser(userId).catch(() => null) : Promise.resolve(null),
       ]);
       setRequests(requestsRes.data.data || []);
       setServices(servicesRes.data.services || []);
       setCategories(categoriesRes.data.data || []);
+      if (meetingsRes?.data?.meetings) setMeetings(meetingsRes.data.meetings);
     } catch {
       toast.error("Error al cargar tus solicitudes");
     } finally {
@@ -227,6 +233,43 @@ export const MyRequestsPage = () => {
         </select>
       </div>
 
+      {meetings.filter((m) => m.status !== "CANCELLED").length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
+            Reuniones ({meetings.filter((m) => m.status !== "CANCELLED").length})
+          </h2>
+          {meetings.filter((m) => m.status !== "CANCELLED").map((meeting) => {
+            const mId = meeting._id || meeting.id;
+            const formattedTime = meeting.startTime
+              ? new Intl.DateTimeFormat("es-GT", { dateStyle: "full", timeStyle: "short" }).format(new Date(meeting.startTime))
+              : null;
+            const sr = meeting.serviceRequestId;
+            const title = sr && typeof sr === "object" ? sr.title || "Solicitud de servicio" : "Solicitud de servicio";
+            const workerName = meeting.workerId
+              ? `${meeting.workerId.firstName || ""} ${meeting.workerId.lastName || ""}`.trim() || "Trabajador"
+              : "Trabajador";
+            const isConfirmed = meeting.status === "CONFIRMED";
+            return (
+              <button
+                key={mId}
+                type="button"
+                onClick={() => setSelectedMeeting(mId)}
+                className="w-full text-left rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 p-4 space-y-1.5 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`rounded-md px-2 py-0.5 text-[11px] font-bold ${isConfirmed ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-yellow-100 text-yellow-800 border border-yellow-200"}`}>
+                    {isConfirmed ? "Confirmada" : "Pendiente"}
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{title}</p>
+                <p className="text-xs text-gray-500">{workerName}</p>
+                {formattedTime && <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">{formattedTime}</p>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <hr className="border-gray-200 dark:border-gray-700" />
 
       {loading ? (
@@ -268,7 +311,7 @@ export const MyRequestsPage = () => {
                   onClick={() => setSelectedItem(item)}
                 >
                 <CardContent className="p-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 sm:justify-between">
                     <div className="flex items-center gap-4 min-w-0">
                       {getItemImage(item) ? (
                         <img
@@ -301,15 +344,6 @@ export const MyRequestsPage = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap sm:flex-shrink-0 sm:justify-end">
-                      {item._type === "service" && item.workerId && item.status !== "CANCELLED" && (
-                        <button
-                          onClick={(e) => handleChat(e, item.workerId?._id || item.workerId)}
-                          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-colors"
-                          disabled={messagingId === (item.workerId?._id || item.workerId)}
-                        >
-                          <ChatBubbleLeftIcon className="size-4" />
-                        </button>
-                      )}
                       <span
                         className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${statusInfo?.class || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}
                       >
@@ -319,6 +353,15 @@ export const MyRequestsPage = () => {
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         {getItemBudget(item)}
                       </span>
+                      {item._type === "service" && item.workerId && item.status !== "CANCELLED" && (
+                        <button
+                          onClick={(e) => handleChat(e, item.workerId?._id || item.workerId)}
+                          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-colors"
+                          disabled={messagingId === (item.workerId?._id || item.workerId)}
+                        >
+                          <ChatBubbleLeftIcon className="size-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -341,6 +384,13 @@ export const MyRequestsPage = () => {
         serviceRequestId={selectedItem?._type === "serviceRequest" ? selectedItem._id : null}
         service={selectedItem?._type === "service" ? selectedItem : null}
         onActionTaken={fetchData}
+      />
+
+      <MeetingDetailModal
+        open={!!selectedMeeting}
+        onClose={() => setSelectedMeeting(null)}
+        meetingId={selectedMeeting}
+        onAction={fetchData}
       />
     </div>
   );

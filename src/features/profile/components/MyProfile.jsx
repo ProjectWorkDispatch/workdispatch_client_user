@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon, FlagIcon } from '@heroicons/react/24/outline';
+import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon, FlagIcon, StarIcon } from '@heroicons/react/24/outline';
 import { axiosUser } from '../../../shared/api/api';
 import { getCreatedReports, getReceivedReports } from '../../../shared/api/user';
 import { useAuthStore } from '../../auth/store/authStore';
+import { useReviewsStore } from '../../../shared/store/userStore';
+import { ReviewCard } from '../../reviews/components/ReviewCard';
 import { Button } from '../../../shared/components/ui/Button';
 import { Modal } from '../../../shared/components/ui/Modal';
 import {
   Card, CardHeader, CardTitle, CardDescription, CardContent, Badge,
 } from '../../../shared/components/layout/DashboardContainer';
 import { sanitizeLettersOnly, sanitizePhone, blockInvalidNumberKeys } from '../../../shared/utils/inputRestrictions.js';
+import { MapPicker } from '../../../shared/components/ui/MapPicker';
 import toast from 'react-hot-toast';
 
 export const MyProfile = () => {
@@ -22,7 +25,7 @@ export const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Perfil form
-  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', address: '', description: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', address: '', latitude: '', longitude: '', description: '' });
   const [originalForm, setOriginalForm] = useState(form);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -44,6 +47,10 @@ export const MyProfile = () => {
   const [selectedSkill, setSelectedSkill] = useState('');
   const [experienceYears, setExperienceYears] = useState('');
 
+  // Reseñas
+  const { given, received: reviewsReceived, loading: reviewsLoading, getGivenReviews, getReceivedReviews } = useReviewsStore();
+  const [reviewsTab, setReviewsTab] = useState('received');
+
   // Reportes
   const [sentReports, setSentReports] = useState([]);
   const [receivedReports, setReceivedReports] = useState([]);
@@ -52,46 +59,51 @@ export const MyProfile = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const res = await axiosUser.get(`/users/by-email/${user?.email}`);
-            const u = res.data?.data || res.data;
-            setProfile(u);
-            setMongoId(u._id);
-            const loadedForm = {
-                firstName: u.firstName || '',
-                lastName: u.lastName || '',
-                phone: u.phone || '',
-                address: u.address || '',
-                description: u.description || '',
-            };
-            setForm(loadedForm);
-            setOriginalForm(loadedForm);
-            if (isWorker) {
-                const pRes = await axiosUser.get(`/PortFolio/my/${u._id}`).catch(() => ({ data: { data: [] } }));
-                setPortfolio(pRes.data?.data || []);
+      try {
+        const res = await axiosUser.get(`/users/by-email/${user?.email}`);
+        const u = res.data?.data || res.data;
+        setProfile(u);
+        setMongoId(u._id);
+        const loadedForm = {
+          firstName: u.firstName || '',
+          lastName: u.lastName || '',
+          phone: u.phone || '',
+          address: u.address || '',
+          latitude: u.latitude ?? '',
+          longitude: u.longitude ?? '',
+          description: u.description || '',
+        };
+        setForm(loadedForm);
+        setOriginalForm(loadedForm);
+        if (isWorker) {
+          const pRes = await axiosUser.get(`/PortFolio/my/${u._id}`).catch(() => ({ data: { data: [] } }));
+          setPortfolio(pRes.data?.data || []);
 
-                const [catRes, mySkillsRes] = await Promise.all([
-                    axiosUser.get('/skill').catch(() => ({ data: { data: [] } })),
-                    axiosUser.get(`/userSkill/my/${u._id}`).catch(() => ({ data: { data: [] } })),
-                ]);
-                setSkillsCatalog(catRes.data?.data || []);
-                setMySkills(mySkillsRes.data?.data || []);
-            }
-
-            const [sentRes, receivedRes] = await Promise.all([
-                getCreatedReports(u._id).catch(() => ({ data: { reports: [] } })),
-                getReceivedReports(u._id).catch(() => ({ data: { reports: [] } })),
-            ]);
-            setSentReports(sentRes.data?.reports || []);
-            setReceivedReports(receivedRes.data?.reports || []);
-        } catch {
-            toast.error('Error al cargar el perfil');
-        } finally {
-            setLoading(false);
+          const [catRes, mySkillsRes] = await Promise.all([
+            axiosUser.get('/skill').catch(() => ({ data: { data: [] } })),
+            axiosUser.get(`/userSkill/my/${u._id}`).catch(() => ({ data: { data: [] } })),
+          ]);
+          setSkillsCatalog(catRes.data?.data || []);
+          setMySkills(mySkillsRes.data?.data || []);
         }
+
+        getGivenReviews(u._id);
+        getReceivedReviews(u._id);
+
+        const [sentRes, receivedRes] = await Promise.all([
+          getCreatedReports(u._id).catch(() => ({ data: { reports: [] } })),
+          getReceivedReports(u._id).catch(() => ({ data: { reports: [] } })),
+        ]);
+        setSentReports(sentRes.data?.reports || []);
+        setReceivedReports(receivedRes.data?.reports || []);
+      } catch {
+        toast.error('Error al cargar el perfil');
+      } finally {
+        setLoading(false);
+      }
     };
     if (user?.email) fetchData();
-}, [user?.email]);
+  }, [user?.email]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
@@ -116,7 +128,7 @@ export const MyProfile = () => {
     try {
       setSaving(true);
       const fd = new FormData();
-      const textFields = ['firstName', 'lastName', 'phone', 'address', 'description'];
+      const textFields = ['firstName', 'lastName', 'phone', 'address', 'latitude', 'longitude', 'description'];
       textFields.forEach(k => {
         if (form[k] !== null && form[k] !== undefined) {
           fd.append(k, form[k]);
@@ -298,11 +310,12 @@ export const MyProfile = () => {
               { label: 'Apellido', key: 'lastName', placeholder: 'Tu apellido', sanitize: sanitizeLettersOnly },
               { label: 'Teléfono', key: 'phone', placeholder: 'Ej: +502 5555-5555', sanitize: sanitizePhone },
               { label: 'Dirección / Ubicación', key: 'address', placeholder: 'Ciudad, Zona, País' },
-            ].map(({ label, key, placeholder, sanitize }) => (
+            ].map(({ label, key, placeholder, sanitize, type }) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{label}</label>
                 <input
-                  type="text"
+                  type={type || "text"}
+                  inputMode={type === "number" ? "decimal" : undefined}
                   placeholder={placeholder}
                   value={form[key]}
                   disabled={!isEditing}
@@ -311,6 +324,16 @@ export const MyProfile = () => {
                 />
               </div>
             ))}
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Ubicación en el mapa</p>
+            <MapPicker
+              lat={form.latitude}
+              lng={form.longitude}
+              readOnly={!isEditing}
+              onLocationChange={(lat, lng) => setForm({ ...form, latitude: lat, longitude: lng })}
+            />
           </div>
 
           {isWorker && (
@@ -409,9 +432,8 @@ export const MyProfile = () => {
                 {portfolio.map((item) => (
                   <div
                     key={item._id}
-                    className={`rounded-xl border overflow-hidden transition-all ${
-                      item.status === 'ACTIVE' ? 'border-gray-200 dark:border-gray-700' : 'border-gray-100 dark:border-gray-800 opacity-60'
-                    }`}
+                    className={`rounded-xl border overflow-hidden transition-all ${item.status === 'ACTIVE' ? 'border-gray-200 dark:border-gray-700' : 'border-gray-100 dark:border-gray-800 opacity-60'
+                      }`}
                   >
                     {item.imageUrl && !item.imageUrl.includes('no disponible') && (
                       <img
@@ -469,9 +491,8 @@ export const MyProfile = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Foto del trabajo</label>
               <div
                 onClick={() => portfolioImageRef.current?.click()}
-                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                  portfolioImagePreview ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30' : 'border-gray-200 dark:border-gray-700 hover:border-yellow-300'
-                }`}
+                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${portfolioImagePreview ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30' : 'border-gray-200 dark:border-gray-700 hover:border-yellow-300'
+                  }`}
               >
                 {portfolioImagePreview ? (
                   <img src={portfolioImagePreview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
@@ -506,6 +527,57 @@ export const MyProfile = () => {
         </div>
       </Modal>
 
+      {/* Reseñas */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <StarIcon className="size-5 text-yellow-500" />
+            Mis Reseñas
+          </CardTitle>
+          <CardDescription>Reseñas que has dejado y que has recibido</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+            {[
+              { key: "received", label: "Recibidas" },
+              { key: "given", label: "Dadas" },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setReviewsTab(t.key)}
+                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition ${reviewsTab === t.key
+                    ? "border-yellow-500 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                  }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {reviewsLoading && (
+            <div className="flex justify-center py-10">
+              <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {!reviewsLoading && (reviewsTab === "received" ? reviewsReceived : given).length === 0 && (
+            <div className="py-10 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
+              <StarIcon className="size-8" />
+              <p className="text-sm">
+                {reviewsTab === "received" ? "Aún no has recibido reseñas" : "Aún no has dejado reseñas"}
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(reviewsTab === "received" ? reviewsReceived : given).map((review) => (
+              <ReviewCard key={review._id} review={review} direction={reviewsTab} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Reportes */}
       <Card>
         <CardHeader>
@@ -516,42 +588,43 @@ export const MyProfile = () => {
           <CardDescription>Reportes enviados y recibidos</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setReportsTab('received')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                reportsTab === 'received'
-                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
-              }`}
-            >
-              Recibidos ({receivedReports.length})
-            </button>
-            <button
-              onClick={() => setReportsTab('sent')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                reportsTab === 'sent'
-                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
-              }`}
-            >
-              Enviados ({sentReports.length})
-            </button>
+          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+            {[
+              { key: "received", label: "Recibidos", count: receivedReports.length },
+              { key: "sent", label: "Enviados", count: sentReports.length },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setReportsTab(t.key)}
+                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition ${reportsTab === t.key
+                    ? "border-yellow-500 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                  }`}
+              >
+                {t.label} ({t.count})
+              </button>
+            ))}
           </div>
 
-          {reportsTab === 'received' && (
-            receivedReports.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No tienes reportes recibidos</p>
+          {(() => {
+            const list = reportsTab === "received" ? receivedReports : sentReports;
+            return list.length === 0 ? (
+              <div className="py-10 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
+                <FlagIcon className="size-8" />
+                <p className="text-sm">
+                  {reportsTab === "received" ? "No tienes reportes recibidos" : "No has enviado reportes"}
+                </p>
+              </div>
             ) : (
-              <div className="space-y-3">
-                {receivedReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {list.map((r) => (
+                  <div key={r._id} className="p-4 bg-gray-50 dark:bg-gray-950 rounded-xl border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        De: {r.reporterId?.firstName || 'Usuario'}
+                        {reportsTab === "received" ? `De: ${r.reporterId?.firstName || "Usuario"}` : `Contra: ${r.reporteredId?.firstName || "Usuario"}`}
                       </span>
                       <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
+                        {new Date(r.createdAt).toLocaleDateString("es-GT")}
                       </span>
                     </div>
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
@@ -559,31 +632,8 @@ export const MyProfile = () => {
                   </div>
                 ))}
               </div>
-            )
-          )}
-
-          {reportsTab === 'sent' && (
-            sentReports.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No has enviado reportes</p>
-            ) : (
-              <div className="space-y-3">
-                {sentReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        Contra: {r.reporteredId?.firstName || 'Usuario'}
-                      </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
-                    {r.Description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{r.Description}</p>}
-                  </div>
-                ))}
-              </div>
-            )
-          )}
+            );
+          })()}
         </CardContent>
       </Card>
     </div>

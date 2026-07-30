@@ -6,11 +6,19 @@ import { VerifyEmailPage } from "../../features/auth/pages/VerifyEmailPage.jsx";
 import { DashboardContainer } from "../../shared/components/layout/DashboardContainer.jsx";
 import { MyRequestsPage } from "../../features/Dashboard/MyRequestsPage.jsx";
 import { ServiceRequestDetailPage } from "../../features/Dashboard/ServiceRequestDetailPage.jsx";
+import { ClientServiceDetailPage } from "../../features/Dashboard/ClientServiceDetailPage.jsx";
 import { WorkerMyJobsPage } from "../../features/Dashboard/Worker/WorkerMyJobsPage.jsx";
+import { WorkerFindJobsPage } from "../../features/Dashboard/Worker/WorkerFindJobsPage.jsx";
+import { WorkerOffersPage } from "../../features/Proposals/Worker/WorkerOffersPage.jsx";
+import { WorkerProposalDetailPage } from "../../features/Proposals/Worker/WorkerProposalDetailPage.jsx";
+import { WorkerServiceDetailPage } from "../../features/Services/Worker/WorkerServiceDetailPage.jsx";
+import { WorkerServicesPage } from "../../features/Services/Worker/WorkerServicesPage.jsx";
 import { DashboardHome } from "../../features/Dashboard/DashboardHome.jsx";
 import { FindWorkers } from "../../features/workers/components/FindWorkers.jsx";
 import { WorkerPublicProfile } from "../../features/workers/components/WorkerPublicProfile.jsx";
+import { ClientPublicProfile } from "../../features/workers/components/ClientPublicProfile.jsx";
 import { VerificationView } from "../../features/verification/components/VerificationView.jsx";
+import { VerificationGate } from "./VerificationGate.jsx";
 import { MyProfile } from "../../features/profile/components/MyProfile.jsx";
 import { MessagesHome } from "../../features/messages/components/MessagesHome.jsx";
 import { NotificationsHome } from "../../features/notifications/components/NotificationsHome.jsx";
@@ -38,17 +46,27 @@ export const AppRoutes = () => {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardContainer />
+            <VerificationGate>
+              <DashboardContainer />
+            </VerificationGate>
           </ProtectedRoute>
         }
       >
         <Route index element={<DashboardHome />} />
         <Route path="my-requests" element={<MyRequestsPage />} />
         <Route path="my-requests/:id" element={<ServiceRequestDetailPage />} />
+        <Route path="my-services/:id" element={<ClientServiceDetailPage />} />
         <Route path="my-jobs" element={<WorkerMyJobsPage />} />
+        <Route path="find-jobs" element={<WorkerFindJobsPage />} />
+
+        <Route path="my-offers" element={<WorkerOffersPage />} />
+        <Route path="my-offers/:id" element={<WorkerProposalDetailPage />} />
+        <Route path="worker-service" element={<WorkerServicesPage />} />
+        <Route path="worker-service/:id" element={<WorkerServiceDetailPage />} />
 
         <Route path="find-workers" element={<FindWorkers />} />
         <Route path="worker/:id" element={<WorkerPublicProfile />} />
+        <Route path="client/:id" element={<ClientPublicProfile />} />
         <Route path="verification" element={<VerificationView />} />
         <Route path="profile" element={<MyProfile />} />
         <Route path="messages" element={<MessagesHome />} />
