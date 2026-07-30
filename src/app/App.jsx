@@ -2,9 +2,11 @@
 import { Toaster } from 'react-hot-toast';
 import './App.css'
 import { AppRoutes } from './router/AppRoutes'
+import { useSocketConnection } from '../shared/hooks/useSocketConnection.js';
 
 
 function App() {
+  useSocketConnection();
 
   return( 
     <>

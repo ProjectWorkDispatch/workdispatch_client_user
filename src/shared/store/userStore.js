@@ -53,19 +53,40 @@ export const useMessagesStore = create((set, get) => ({
     sendMessage: async (conversationId, senderId, content) => {
         try {
             const res = await api.sendMessage({ conversationId, senderId, content });
-            const newMsg = res.data?.newMessage; // backend-user devuelve "newMessage", no "message"
+            const newMsg = res.data?.newMessage;
             if (newMsg) set({ messages: [...get().messages, newMsg] });
 
             set({
                 conversations: get().conversations.map((c) =>
                     c._id === conversationId
-                        ? { ...c, lastMessage: content, lastMessageAt: new Date() }
+                        ? { ...c, lastMessage: content, lastMessageAt: new Date().toISOString() }
                         : c
                 ),
             });
         } catch (error) {
             console.error('Error enviando mensaje:', error.response?.data || error.message);
             throw error;
+        }
+    },
+
+    receiveMessage: (message, conversationId) => {
+        const { selectedConversation, messages, conversations } = get();
+
+        set({
+            conversations: conversations.some((c) => c._id === conversationId)
+                ? conversations.map((c) =>
+                    c._id === conversationId
+                        ? { ...c, lastMessage: message.content, lastMessageAt: message.createdAt }
+                        : c
+                  )
+                : conversations,
+        });
+
+        if (selectedConversation?._id === conversationId) {
+            const alreadyExists = messages.some((m) => m._id === message._id);
+            if (!alreadyExists) {
+                set({ messages: [...messages, message] });
+            }
         }
     },
 
@@ -90,26 +111,22 @@ export const useNotificationsStore = create((set, get) => ({
     },
 
     markAsRead: async (id) => {
+        const previous = get().notifications;
+        set({ notifications: previous.map((n) => (n._id === id ? { ...n, isRead: true } : n)) });
         try {
             await api.markNotificationAsRead(id);
-            set({
-                notifications: get().notifications.map((n) =>
-                    n._id === id ? { ...n, isRead: true } : n
-                ),
-            });
         } catch (error) {
-            console.error('Error marking notification as read:', error);
+            set({ notifications: previous, error: error.response?.data?.message || 'Error al marcar como leída' });
         }
     },
 
     markAllAsRead: async (userId) => {
+        const previous = get().notifications;
+        set({ notifications: previous.map((n) => ({ ...n, isRead: true })) });
         try {
             await api.markAllNotificationsAsRead(userId);
-            set({
-                notifications: get().notifications.map((n) => ({ ...n, isRead: true })),
-            });
         } catch (error) {
-            console.error('Error marking all notifications as read:', error);
+            set({ notifications: previous, error: error.response?.data?.message || 'Error al marcar todas como leídas' });
         }
     },
 
@@ -208,11 +225,13 @@ export const useFavoritesStore = create((set, get) => ({
     },
 
     toggleFavorite: async (clientId, workerId) => {
-        const isFav = get().favorites.some((f) => (f.workerId?._id || f.workerId) === workerId);
+        const getFavWorkerId = (f) =>
+            typeof f.workerId === 'object' ? f.workerId._id : f.workerId;
+        const isFav = get().favorites.some((f) => getFavWorkerId(f) === workerId);
         try {
             if (isFav) {
                 await api.removeFavorite(clientId, workerId);
-                set({ favorites: get().favorites.filter((f) => (f.workerId?._id || f.workerId) !== workerId) });
+                set({ favorites: get().favorites.filter((f) => getFavWorkerId(f) !== workerId) });
             } else {
                 const res = await api.addFavorite(clientId, workerId);
                 set({ favorites: [...get().favorites, res.data.favorite] });
@@ -222,4 +241,6 @@ export const useFavoritesStore = create((set, get) => ({
             return { success: false, error: error.response?.data?.message || 'Error al actualizar favoritos' };
         }
     },
+
+    clearError: () => set({ error: null }),
 }));

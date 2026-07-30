@@ -103,6 +103,9 @@ const handleRefreshToken = async function (error) {
     return Promise.reject(error);
   }
 
+  // Snapshot the refreshToken before the async call
+  const refreshTokenAtStart = refreshToken;
+
   try {
     let response;
     try {
@@ -115,11 +118,21 @@ const handleRefreshToken = async function (error) {
       }
     }
 
+    // Guard: if the user logged out while the refresh was in-flight, discard the result
+    const currentRefreshToken = useAuthStore.getState().refreshToken;
+    if (currentRefreshToken !== refreshTokenAtStart) {
+      _processQueue(error, null);
+      return Promise.reject(error);
+    }
+
     const { accessToken, refreshToken: newRefreshToken, expiresIn, userDetails } = response.data;
+    const expiresAt = typeof expiresIn === 'number'
+      ? (expiresIn < 1e12 ? Date.now() + expiresIn * 1000 : expiresIn)
+      : null;
     useAuthStore.setState({
       token: accessToken,
       refreshToken: newRefreshToken,
-      expiresAt: expiresIn,
+      expiresAt,
       user: userDetails || useAuthStore.getState().user,
       isAuthenticated: true,
     });
@@ -137,7 +150,20 @@ const handleRefreshToken = async function (error) {
   }
 };
 
-// --- Un único interceptor de respuesta para ambos clientes ---
+// Response interceptor: handle expired tokens on axiosUser (immediate logout)
+axiosUser.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const code = error.response?.data?.error;
+    if (status === 401 && (code === 'TOKEN_EXPIRED' || code === 'MISSING_TOKEN' || code === 'INVALID_TOKEN')) {
+      useAuthStore.getState().logout();
+    }
+    return Promise.reject(error);
+  }
+);
+
+// --- Un único interceptor de respuesta para ambos clientes (refresh token) ---
 axiosAuth.interceptors.response.use((res) => res, handleRefreshToken);
 axiosUser.interceptors.response.use((res) => res, handleRefreshToken);
 

@@ -268,7 +268,7 @@ export const MyRequestsPage = () => {
                   onClick={() => setSelectedItem(item)}
                 >
                 <CardContent className="p-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 sm:justify-between">
                     <div className="flex items-center gap-4 min-w-0">
                       {getItemImage(item) ? (
                         <img
@@ -301,15 +301,6 @@ export const MyRequestsPage = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap sm:flex-shrink-0 sm:justify-end">
-                      {item._type === "service" && item.workerId && item.status !== "CANCELLED" && (
-                        <button
-                          onClick={(e) => handleChat(e, item.workerId?._id || item.workerId)}
-                          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-colors"
-                          disabled={messagingId === (item.workerId?._id || item.workerId)}
-                        >
-                          <ChatBubbleLeftIcon className="size-4" />
-                        </button>
-                      )}
                       <span
                         className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${statusInfo?.class || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}
                       >
@@ -319,6 +310,15 @@ export const MyRequestsPage = () => {
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         {getItemBudget(item)}
                       </span>
+                      {item._type === "service" && item.workerId && item.status !== "CANCELLED" && (
+                        <button
+                          onClick={(e) => handleChat(e, item.workerId?._id || item.workerId)}
+                          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-colors"
+                          disabled={messagingId === (item.workerId?._id || item.workerId)}
+                        >
+                          <ChatBubbleLeftIcon className="size-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </CardContent>

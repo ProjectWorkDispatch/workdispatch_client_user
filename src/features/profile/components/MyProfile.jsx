@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon, FlagIcon } from '@heroicons/react/24/outline';
+import { UserIcon, CameraIcon, PlusIcon, PencilIcon, EyeSlashIcon, EyeIcon, ArrowUpTrayIcon, FlagIcon, StarIcon } from '@heroicons/react/24/outline';
 import { axiosUser } from '../../../shared/api/api';
 import { getCreatedReports, getReceivedReports } from '../../../shared/api/user';
 import { useAuthStore } from '../../auth/store/authStore';
+import { useReviewsStore } from '../../../shared/store/userStore';
+import { ReviewCard } from '../../reviews/components/ReviewCard';
 import { Button } from '../../../shared/components/ui/Button';
 import { Modal } from '../../../shared/components/ui/Modal';
 import {
@@ -44,6 +46,10 @@ export const MyProfile = () => {
   const [selectedSkill, setSelectedSkill] = useState('');
   const [experienceYears, setExperienceYears] = useState('');
 
+  // Reseñas
+  const { given, received: reviewsReceived, loading: reviewsLoading, getGivenReviews, getReceivedReviews } = useReviewsStore();
+  const [reviewsTab, setReviewsTab] = useState('received');
+
   // Reportes
   const [sentReports, setSentReports] = useState([]);
   const [receivedReports, setReceivedReports] = useState([]);
@@ -77,6 +83,9 @@ export const MyProfile = () => {
                 setSkillsCatalog(catRes.data?.data || []);
                 setMySkills(mySkillsRes.data?.data || []);
             }
+
+            getGivenReviews(u._id);
+            getReceivedReviews(u._id);
 
             const [sentRes, receivedRes] = await Promise.all([
                 getCreatedReports(u._id).catch(() => ({ data: { reports: [] } })),
@@ -506,6 +515,58 @@ export const MyProfile = () => {
         </div>
       </Modal>
 
+      {/* Reseñas */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <StarIcon className="size-5 text-yellow-500" />
+            Mis Reseñas
+          </CardTitle>
+          <CardDescription>Reseñas que has dejado y que has recibido</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+            {[
+              { key: "received", label: "Recibidas" },
+              { key: "given", label: "Dadas" },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setReviewsTab(t.key)}
+                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition ${
+                  reviewsTab === t.key
+                    ? "border-yellow-500 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {reviewsLoading && (
+            <div className="flex justify-center py-10">
+              <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {!reviewsLoading && (reviewsTab === "received" ? reviewsReceived : given).length === 0 && (
+            <div className="py-10 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
+              <StarIcon className="size-8" />
+              <p className="text-sm">
+                {reviewsTab === "received" ? "Aún no has recibido reseñas" : "Aún no has dejado reseñas"}
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(reviewsTab === "received" ? reviewsReceived : given).map((review) => (
+              <ReviewCard key={review._id} review={review} direction={reviewsTab} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Reportes */}
       <Card>
         <CardHeader>
@@ -516,42 +577,44 @@ export const MyProfile = () => {
           <CardDescription>Reportes enviados y recibidos</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setReportsTab('received')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                reportsTab === 'received'
-                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
-              }`}
-            >
-              Recibidos ({receivedReports.length})
-            </button>
-            <button
-              onClick={() => setReportsTab('sent')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                reportsTab === 'sent'
-                  ? 'bg-yellow-500 text-gray-900 dark:text-gray-100'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-yellow-400'
-              }`}
-            >
-              Enviados ({sentReports.length})
-            </button>
+          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+            {[
+              { key: "received", label: "Recibidos", count: receivedReports.length },
+              { key: "sent", label: "Enviados", count: sentReports.length },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setReportsTab(t.key)}
+                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition ${
+                  reportsTab === t.key
+                    ? "border-yellow-500 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                }`}
+              >
+                {t.label} ({t.count})
+              </button>
+            ))}
           </div>
 
-          {reportsTab === 'received' && (
-            receivedReports.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No tienes reportes recibidos</p>
+          {(() => {
+            const list = reportsTab === "received" ? receivedReports : sentReports;
+            return list.length === 0 ? (
+              <div className="py-10 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
+                <FlagIcon className="size-8" />
+                <p className="text-sm">
+                  {reportsTab === "received" ? "No tienes reportes recibidos" : "No has enviado reportes"}
+                </p>
+              </div>
             ) : (
-              <div className="space-y-3">
-                {receivedReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {list.map((r) => (
+                  <div key={r._id} className="p-4 bg-gray-50 dark:bg-gray-950 rounded-xl border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        De: {r.reporterId?.firstName || 'Usuario'}
+                        {reportsTab === "received" ? `De: ${r.reporterId?.firstName || "Usuario"}` : `Contra: ${r.reporteredId?.firstName || "Usuario"}`}
                       </span>
                       <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
+                        {new Date(r.createdAt).toLocaleDateString("es-GT")}
                       </span>
                     </div>
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
@@ -559,31 +622,8 @@ export const MyProfile = () => {
                   </div>
                 ))}
               </div>
-            )
-          )}
-
-          {reportsTab === 'sent' && (
-            sentReports.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No has enviado reportes</p>
-            ) : (
-              <div className="space-y-3">
-                {sentReports.map((r) => (
-                  <div key={r._id} className="p-3 bg-gray-50 dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        Contra: {r.reporteredId?.firstName || 'Usuario'}
-                      </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(r.createdAt).toLocaleDateString('es-GT')}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{r.Reason}</p>
-                    {r.Description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{r.Description}</p>}
-                  </div>
-                ))}
-              </div>
-            )
-          )}
+            );
+          })()}
         </CardContent>
       </Card>
     </div>
