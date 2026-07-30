@@ -190,7 +190,9 @@ export const useAuthStore = create(
           toast.error(errorMessage);
           return { success: false, error: errorMessage };
         }
+
       },
+      
     }),
 
     {
