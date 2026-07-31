@@ -68,7 +68,10 @@ const handleRefreshToken = async function (error) {
   const status = error.response?.status;
   const errorCode = error.response?.data?.error;
   const requestUrl = _original.url || "";
-  const isRefreshEndpoint = requestUrl.includes("/Auth/refresh") || requestUrl.includes("/auth/refresh");
+  const isRefreshEndpoint =
+    requestUrl.includes("/users/refresh") ||
+    requestUrl.includes("/Auth/refresh") ||
+    requestUrl.includes("/auth/refresh");
 
   const shouldAttemptRefresh =
     !isRefreshEndpoint &&
@@ -106,17 +109,17 @@ const handleRefreshToken = async function (error) {
   // Snapshot the refreshToken before the async call
   const refreshTokenAtStart = refreshToken;
 
-  try {
-    let response;
     try {
-      response = await axiosAuth.post("/Auth/refresh", { refreshToken });
-    } catch (refreshError) {
-      if (refreshError.response?.status === 404) {
-        response = await axiosAuth.post("/auth/refresh", { refreshToken });
-      } else {
-        throw refreshError;
+      let response;
+      try {
+        response = await axiosUser.post("/users/refresh", { refreshToken });
+      } catch (refreshError) {
+        if (refreshError.response?.status === 404) {
+          response = await axiosAuth.post("/Auth/refresh", { refreshToken });
+        } else {
+          throw refreshError;
+        }
       }
-    }
 
     // Guard: if the user logged out while the refresh was in-flight, discard the result
     const currentRefreshToken = useAuthStore.getState().refreshToken;

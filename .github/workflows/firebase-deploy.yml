@@ -20,7 +20,11 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
+
       - run: pnpm run build
+        env:
+          VITE_AUTH_URL: ${{ secrets.VITE_AUTH_URL }}
+          VITE_USER_URL: ${{ secrets.VITE_USER_URL }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
