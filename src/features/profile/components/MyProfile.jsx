@@ -163,7 +163,15 @@ export const MyProfile = () => {
         skillId: selectedSkill,
         experienceYears: Number(experienceYears),
       });
-      setMySkills(prev => [...prev, res.data?.data || res.data]);
+      const added = res.data?.data || res.data;
+      const catalogSkill = skillsCatalog.find((s) => s._id === selectedSkill);
+      setMySkills(prev => [
+        ...prev,
+        {
+          ...added,
+          skillId: catalogSkill || added.skillId,
+        },
+      ]);
       setSelectedSkill('');
       setExperienceYears('');
       toast.success('Habilidad agregada');
