@@ -39,7 +39,6 @@ export function getMeetingReminders(meetings, userId) {
       const other = isClient ? m.workerId : m.clientId;
       const otherName = other ? `${other.firstName || ''} ${other.lastName || ''}`.trim() : 'la otra persona';
       const date = new Date(m.startTime);
-      const requestId = getIdString(m.serviceRequestId);
 
       return {
         id: `meeting-${m._id}`,

@@ -7,7 +7,6 @@ import { DashboardContainer } from "../../shared/components/layout/DashboardCont
 import { MyRequestsPage } from "../../features/Dashboard/MyRequestsPage.jsx";
 import { ServiceRequestDetailPage } from "../../features/Dashboard/ServiceRequestDetailPage.jsx";
 import { ClientServiceDetailPage } from "../../features/Dashboard/ClientServiceDetailPage.jsx";
-import { WorkerMyJobsPage } from "../../features/Dashboard/Worker/WorkerMyJobsPage.jsx";
 import { WorkerFindJobsPage } from "../../features/Dashboard/Worker/WorkerFindJobsPage.jsx";
 import { WorkerProposalDetailPage } from "../../features/Proposals/Worker/WorkerProposalDetailPage.jsx";
 import { WorkerServiceDetailPage } from "../../features/Services/Worker/WorkerServiceDetailPage.jsx";
@@ -55,7 +54,6 @@ export const AppRoutes = () => {
         <Route path="my-requests" element={<MyRequestsPage />} />
         <Route path="my-requests/:id" element={<ServiceRequestDetailPage />} />
         <Route path="my-services/:id" element={<ClientServiceDetailPage />} />
-        <Route path="my-jobs" element={<WorkerMyJobsPage />} />
         <Route path="find-jobs" element={<WorkerFindJobsPage />} />
 
         <Route path="my-offers/:id" element={<WorkerProposalDetailPage />} />
