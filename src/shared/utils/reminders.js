@@ -49,7 +49,7 @@ export function getMeetingReminders(meetings, userId) {
         badge: formatMeetingDate(date),
         overdue: date.getTime() < now,
         sortDate: date.getTime(),
-        route: `/dashboard/my-requests`,
+        route: isClient ? `/dashboard/my-requests` : `/dashboard/worker-service`,
         state: { openMeetingId: m._id },
       };
     })
